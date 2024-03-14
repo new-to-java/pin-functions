@@ -1,8 +1,10 @@
 package com.bc.adapter.in.rest;
 
+import com.bc.adapter.in.rest.mapper.PinFunctionsResponseMapper;
+import com.bc.application.domain.PinFunctionsResponse;
 import com.bc.application.port.in.rest.client.PinFunctions;
 import com.bc.application.port.in.rest.command.GeneratePinCommand;
-import com.bc.application.port.in.rest.mapper.PinFunctionsMapper;
+import com.bc.application.port.in.rest.mapper.PinFunctionsRequestMapper;
 import com.bc.application.service.impl.PinFunctionsServiceImpl;
 import com.bc.model.dto.*;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -15,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PinFunctionsImpl implements PinFunctions {
 
     @Inject
-    PinFunctionsMapper pinFunctionsMapper;
+    PinFunctionsResponseMapper pinFunctionsResponseMapper;
 
     @Inject
     PinFunctionsServiceImpl pinFunctionsService;
@@ -30,16 +32,19 @@ public class PinFunctionsImpl implements PinFunctions {
     public Response generatePin(GeneratePinRequest generatePinRequest) {
 
         log.debug("Generate PIN Request received: {}.", generatePinRequest.toString());
+        // Build command object from DTO
         GeneratePinCommand generatePinCommand = GeneratePinCommand.builder()
                 .pan(generatePinRequest.getPan())
                 .pinVerificationKey(generatePinRequest.getPinVerificationKey())
                 .pinLength(generatePinRequest.getPinLength())
                 .pinOffset(generatePinRequest.getPinOffset())
                 .build();
-
-        pinFunctionsService.generatePin(generatePinCommand);
-
-        return null;
+        // Call service to generate PIN and map response to Dto
+        PinFunctionsResponse pinFunctionsResponse = pinFunctionsService.generatePin(generatePinCommand);
+        GeneratePinResponse generatePinResponse = pinFunctionsResponseMapper
+                .mapPinFunctionResponseToGeneratePinResponseDto(pinFunctionsResponse);
+        // Build REST API response
+        return Response.ok().entity(generatePinResponse).build();
     }
 
     /**

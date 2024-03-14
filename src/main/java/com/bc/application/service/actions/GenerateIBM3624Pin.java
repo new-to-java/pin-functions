@@ -1,28 +1,30 @@
 package com.bc.application.service.actions;
 
 import com.bc.utilities.TripleDES;
+import lombok.Getter;
 
 /**
  * This class defines methods required for generating an IBM 3624 PIN based on an offset.
  */
+@Getter
 public class GenerateIBM3624Pin {
 
     private String pan;
     private String pin;
     private String pinLength;
-    private String naturalPin;
+    private String intermediatePin;
     private String pinOffset;
 
     /**
      * Private constructor to be used by the builder pattern method to instantiate the object and call methods.
-     * @param builder
+     * @param builder Builder pattern class for generating an IBM 3624 PIN based on an offset.
      */
     private GenerateIBM3624Pin(Builder builder) {
 
         this.pan = builder.pan;
         this.pin = builder.pin;
         this.pinLength = builder.pinLength;
-        this.naturalPin = builder.naturalPin;
+        this.intermediatePin = builder.intermediatePin;
         this.pinOffset = builder.pinOffset;
     }
 
@@ -33,7 +35,7 @@ public class GenerateIBM3624Pin {
                 "pan: " + pan + ", " +
                 "pin: " + pin + ", " +
                 "pinLength: " + pinLength + ", " +
-                "naturalPin: " + naturalPin + ", " +
+                "intermediatePin: " + intermediatePin + ", " +
                 "pinOffset: " + pinOffset +
                 " }";
     }
@@ -54,7 +56,7 @@ public class GenerateIBM3624Pin {
          * @param pan PAN for which PIN must be generated.
          * @return 12 digit PIN validation data.
          */
-        TdeaEncryptPinValidationData getPinValidationData (String pan);
+        TdeaEncryptPinValidationData getPinValidationDataFromPan (String pan);
     }
 
     /**
@@ -90,7 +92,7 @@ public class GenerateIBM3624Pin {
          * @param pinLength Assinged PIN length for the natural PIN.
          * @return Natural PIN generated.
          */
-        AddPinOffset truncateToPinLength (int pinLength);
+        AddPinOffset truncateToPinLength (String pinLength);
     }
 
     /**
@@ -128,9 +130,6 @@ public class GenerateIBM3624Pin {
         private String pinValidationData;
         private String encryptedPinValidationData;
         private String intermediatePin;
-        private String naturalPin;
-
-        private static final String decimalisationTable = "0123456789012345";
 
         /**
          * Generate PIN validation data from PAN, i.e., rightmost 12 digits from PAN excluding check digit.
@@ -139,15 +138,17 @@ public class GenerateIBM3624Pin {
          * @return 12 digit PIN validation data.
          */
         @Override
-        public TdeaEncryptPinValidationData getPinValidationData(String pan) {
-            final int VALIDATION_DATA_LENGTH = 12;
-            // Calculate start index by subtracting validation data length + 1
-            int startIndex = (pan.length() - VALIDATION_DATA_LENGTH) - 1;
-            // Calculate end index by excluding check digit
-            int endIndex = pan.length() - 1;
+        public TdeaEncryptPinValidationData getPinValidationDataFromPan(String pan) {
+
+            final int PIN_VALIDATION_DATA_LENGTH = 16;
+            final String PAD_CHARACTER = "0";
+            // Pad PAN with "0" to the right, if less than 16
+            if (pan.length() < PIN_VALIDATION_DATA_LENGTH) {
+                this.pinValidationData = pan + PAD_CHARACTER.repeat(PIN_VALIDATION_DATA_LENGTH - pan.length());
+            } else {
+                this.pinValidationData = pan;
+            }
             this.pan = pan;
-            this.pinValidationData = pan.substring(startIndex, endIndex);
-            this.pinValidationData = this.pinValidationData + "F".repeat(16 - this.pinValidationData.length());
             return this;
         }
 
@@ -188,9 +189,9 @@ public class GenerateIBM3624Pin {
          * @return Natural PIN generated.
          */
         @Override
-        public AddPinOffset truncateToPinLength (int pinLength) {
-            this.pinLength = String.valueOf(pinLength);
-            naturalPin = intermediatePin.substring(0, pinLength);
+        public AddPinOffset truncateToPinLength (String pinLength) {
+            this.pinLength = pinLength;
+            intermediatePin = intermediatePin.substring(0, Integer.parseInt(pinLength));
             return this;
         }
 
@@ -205,7 +206,7 @@ public class GenerateIBM3624Pin {
             StringBuilder offsetAdjustedPin = new StringBuilder();
             String adjustedPinOffset = pinOffset.substring(pinOffset.length() - Integer.parseInt(pinLength));
             for(int i = 0; i < adjustedPinOffset.length(); i++){
-                int pinDigit = Integer.parseInt(String.valueOf(naturalPin.charAt(i)));
+                int pinDigit = Integer.parseInt(String.valueOf(intermediatePin.charAt(i)));
                 int offsetDigit = Integer.parseInt(String.valueOf(adjustedPinOffset.charAt(i)));
                 offsetAdjustedPin.append((pinDigit + offsetDigit) % 10);
             }

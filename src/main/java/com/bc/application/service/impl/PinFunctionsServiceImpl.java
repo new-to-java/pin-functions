@@ -6,7 +6,7 @@ import com.bc.application.port.in.rest.command.DecryptPinCommand;
 import com.bc.application.port.in.rest.command.EncryptPinCommand;
 import com.bc.application.port.in.rest.command.GeneratePinCommand;
 import com.bc.application.port.in.rest.command.VerifyPinCommand;
-import com.bc.application.port.in.rest.mapper.PinFunctionsMapper;
+import com.bc.application.port.in.rest.mapper.PinFunctionsRequestMapper;
 import com.bc.application.service.PinFunctionsService;
 import com.bc.application.service.actions.GenerateIBM3624Pin;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PinFunctionsServiceImpl implements PinFunctionsService {
 
     @Inject
-    PinFunctionsMapper pinFunctionsMapper;
+    PinFunctionsRequestMapper pinFunctionsRequestMapper;
 
     /**
      * Method for generating an IBM 3624 ATM Offset based PIN
@@ -29,18 +29,27 @@ public class PinFunctionsServiceImpl implements PinFunctionsService {
     @Override
     public PinFunctionsResponse generatePin(GeneratePinCommand generatePinCommand) {
 
-        PinFunctionsRequest generatePin = pinFunctionsMapper.mapCommandToDomain(generatePinCommand);
+        String DECIMALISATION_TABLE = "0123456789012345";
+        PinFunctionsRequest generatePinRequest = pinFunctionsRequestMapper.mapGeneratePinCommandToDomainRequest(generatePinCommand);
+
+        log.debug("Mapped PIN Functions request object: {}.", generatePinRequest);
+
         GenerateIBM3624Pin ibm3624Pin = GenerateIBM3624Pin.builder()
-                .getPinValidationData(generatePinCommand.getPan())
-                .encryptPinValidationData("0123456789ABCDEFFEDCBA9876543210")
-                .decimaliseEncryptedValidationData("0123456789012345")
-                .truncateToPinLength(4)
-                .addPinOffset("0859")
+                .getPinValidationDataFromPan(generatePinRequest.getPan())
+                .encryptPinValidationData(generatePinRequest.getPinVerificationKey())
+                .decimaliseEncryptedValidationData(DECIMALISATION_TABLE)
+                .truncateToPinLength(generatePinRequest.getPinLength())
+                .addPinOffset(generatePinRequest.getPinOffset())
                 .build();
 
-        log.debug("IBM 3624 PIN Generation response: {}.", ibm3624Pin);
+        log.debug("IBM 3624 PIN Generation response object: {}.", ibm3624Pin);
 
-        return null;
+        PinFunctionsResponse generatePinResponse = pinFunctionsRequestMapper.mapGenerateIBM3624PinToDomainResponse(ibm3624Pin);
+
+        log.debug("Mapped PIN Functions response object: {}.", generatePinResponse);
+
+        return generatePinResponse;
+
     }
 
     /**

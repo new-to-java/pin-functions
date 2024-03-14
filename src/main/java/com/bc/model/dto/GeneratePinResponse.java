@@ -18,11 +18,14 @@ public class GeneratePinResponse {
     String pinOffset;
     @JsonProperty("PinLength")
     String pinLength;
+    @JsonProperty("IntermediatePin")
+    String intermediatePin;
 
-    public GeneratePinResponse(String pin, String pinLength, String pinOffset ){
+    public GeneratePinResponse(String pin, String pinLength, String pinOffset, String intermediatePin){
         this.pin = pin;
         this.pinLength = pinLength;
         this.pinOffset = pinOffset;
+        this.intermediatePin = intermediatePin;
     }
 
     @Override
@@ -32,6 +35,7 @@ public class GeneratePinResponse {
                 "pin: " + pin + ", " +
                 "pinLength: " + pinLength + ", " +
                 "pinOffset: " + pinOffset +
+                "intermediatePin: " + intermediatePin +
                 " }";
     }
 
