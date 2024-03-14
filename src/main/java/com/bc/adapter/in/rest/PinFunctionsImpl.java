@@ -1,8 +1,9 @@
 package com.bc.adapter.in.rest;
 
-import com.bc.application.domain.PinFunctions;
-import com.bc.application.port.in.rest.client.PinFunctionsService;
-import com.bc.application.port.in.rest.mapper.GeneratePINDomainMapper;
+import com.bc.application.port.in.rest.client.PinFunctions;
+import com.bc.application.port.in.rest.command.GeneratePinCommand;
+import com.bc.application.port.in.rest.mapper.PinFunctionsMapper;
+import com.bc.application.service.impl.PinFunctionsServiceImpl;
 import com.bc.model.dto.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -11,21 +12,33 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ApplicationScoped
-public class PinFunctionsServiceImpl implements PinFunctionsService {
+public class PinFunctionsImpl implements PinFunctions {
 
     @Inject
-    GeneratePINDomainMapper generatePINDomainMapper;
+    PinFunctionsMapper pinFunctionsMapper;
+
+    @Inject
+    PinFunctionsServiceImpl pinFunctionsService;
 
     /**
      * Rest API endpoint for generating a clear text PIN.
      *
-     * @param generatePINRequest PIN generation request.
+     * @param generatePinRequest PIN generation request.
      * @return PIN generation response.
      */
     @Override
-    public Response generatePin(GeneratePINRequest generatePINRequest) {
-        PinFunctions pinFunctions = generatePINDomainMapper.mapToDomain(generatePINRequest);
-        log.info("Mapped PIN Generation Request: {}.", pinFunctions);
+    public Response generatePin(GeneratePinRequest generatePinRequest) {
+
+        log.debug("Generate PIN Request received: {}.", generatePinRequest.toString());
+        GeneratePinCommand generatePinCommand = GeneratePinCommand.builder()
+                .pan(generatePinRequest.getPan())
+                .pinVerificationKey(generatePinRequest.getPinVerificationKey())
+                .pinLength(generatePinRequest.getPinLength())
+                .pinOffset(generatePinRequest.getPinOffset())
+                .build();
+
+        pinFunctionsService.generatePin(generatePinCommand);
+
         return null;
     }
 
@@ -37,7 +50,7 @@ public class PinFunctionsServiceImpl implements PinFunctionsService {
      * @return PIN verification response.
      */
     @Override
-    public Response verifyPin(VerifyPINRequest verifyPINRequest) {
+    public Response verifyPin(VerifyPinRequest verifyPINRequest) {
         return null;
     }
 
@@ -48,7 +61,7 @@ public class PinFunctionsServiceImpl implements PinFunctionsService {
      * @return PVV generation response.
      */
     @Override
-    public Response generatePvv(GeneratePVVRequest generatePVVRequest) {
+    public Response generatePvv(GeneratePvvRequest generatePVVRequest) {
         return null;
     }
 
@@ -59,7 +72,7 @@ public class PinFunctionsServiceImpl implements PinFunctionsService {
      * @return PVV verification response.
      */
     @Override
-    public Response verifyPvv(VerifyPVVRequest verifyPVVRequest) {
+    public Response verifyPvv(VerifyPvvRequest verifyPVVRequest) {
         return null;
     }
 

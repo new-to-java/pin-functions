@@ -1,4 +1,4 @@
 package com.bc.application.domain;
 
-public class PVVFunctions {
+public class PinFunctionsResponse {
 }

@@ -1,11 +1,12 @@
 package com.bc.application.domain;
 
+import com.bc.application.enumeration.PinFunctionRequested;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class PinFunctions {
+public class PinFunctionsRequest {
 
     private String pan;
     private String pinVerificationKey;
@@ -20,12 +21,12 @@ public class PinFunctions {
     @Override
     public String toString() {
         return this.getClass().getSimpleName() +
-                "{" +
+                " { " +
                 "pan: " + pan + ", " +
                 "pinVerificationKey: " + pinVerificationKey + ", " +
                 "pinLength: " + pinLength + ", " +
                 "pinOffset: " + pinOffset + ", " +
                 "pinFunctionRequested: " + pinFunctionRequested +
-                "}";
+                " }";
     }
 }

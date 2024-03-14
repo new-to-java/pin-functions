@@ -1,4 +1,4 @@
-package com.bc.application.domain;
+package com.bc.application.enumeration;
 
 public enum PinFunctionRequested {
 

@@ -17,16 +17,16 @@ import jakarta.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/PinFunctions")
-public interface PinFunctionsService {
+public interface PinFunctions {
 
     /**
      * Rest API endpoint for generating a clear text PIN.
      * @param generatePINRequest PIN generation request.
      * @return PIN generation response.
      */
-    @Path("/GeneratePin")
+    @Path("/GenerateIBM3624Pin")
     @POST
-    Response generatePin(@Valid GeneratePINRequest generatePINRequest);
+    Response generatePin(@Valid GeneratePinRequest generatePINRequest);
 
     /**
      * Rest API endpoint for verifying a PIN.
@@ -36,7 +36,7 @@ public interface PinFunctionsService {
      */
     @Path("/VerifyPin")
     @POST
-    Response verifyPin(@Valid VerifyPINRequest verifyPINRequest);
+    Response verifyPin(@Valid VerifyPinRequest verifyPINRequest);
 
     /**
      * Rest API endpoint for generating PVV.
@@ -45,7 +45,7 @@ public interface PinFunctionsService {
      */
     @Path("/GeneratePvv")
     @POST
-    Response generatePvv(@Valid GeneratePVVRequest generatePVVRequest);
+    Response generatePvv(@Valid GeneratePvvRequest generatePVVRequest);
 
     /**
      * Rest API endpoint for verifying PVV.
@@ -54,7 +54,7 @@ public interface PinFunctionsService {
      */
     @Path("/VerifyPvv")
     @POST
-    Response verifyPvv(@Valid VerifyPVVRequest verifyPVVRequest);
+    Response verifyPvv(@Valid VerifyPvvRequest verifyPVVRequest);
 
     /**
      * Rest API endpoint for encrypting a cleartext PIN and generating a PIN block.
