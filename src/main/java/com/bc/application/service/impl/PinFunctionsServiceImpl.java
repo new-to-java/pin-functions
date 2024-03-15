@@ -9,8 +9,10 @@ import com.bc.application.port.in.rest.command.VerifyPinCommand;
 import com.bc.application.port.in.rest.mapper.PinFunctionsRequestMapper;
 import com.bc.application.service.PinFunctionsService;
 import com.bc.application.service.actions.GenerateIBM3624Pin;
+import com.bc.exception.CommonException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 
 @ApplicationScoped
@@ -31,9 +33,7 @@ public class PinFunctionsServiceImpl implements PinFunctionsService {
 
         String DECIMALISATION_TABLE = "0123456789012345";
         PinFunctionsRequest generatePinRequest = pinFunctionsRequestMapper.mapGeneratePinCommandToDomainRequest(generatePinCommand);
-
-        log.debug("Mapped PIN Functions request object: {}.", generatePinRequest);
-
+        // Build IBM 3624 PIN generation object
         GenerateIBM3624Pin ibm3624Pin = GenerateIBM3624Pin.builder()
                 .getPinValidationDataFromPan(generatePinRequest.getPan())
                 .encryptPinValidationData(generatePinRequest.getPinVerificationKey())
@@ -41,13 +41,10 @@ public class PinFunctionsServiceImpl implements PinFunctionsService {
                 .truncateToPinLength(generatePinRequest.getPinLength())
                 .addPinOffset(generatePinRequest.getPinOffset())
                 .build();
-
-        log.debug("IBM 3624 PIN Generation response object: {}.", ibm3624Pin);
-
+        log.debug("Mapped IBM 3624 PIN Generation object: {}.", ibm3624Pin);
+        // Call core domain service to generate IBM 3624 PIN
         PinFunctionsResponse generatePinResponse = pinFunctionsRequestMapper.mapGenerateIBM3624PinToDomainResponse(ibm3624Pin);
-
         log.debug("Mapped PIN Functions response object: {}.", generatePinResponse);
-
         return generatePinResponse;
 
     }

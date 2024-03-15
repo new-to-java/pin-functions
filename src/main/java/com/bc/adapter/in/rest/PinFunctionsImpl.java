@@ -4,11 +4,12 @@ import com.bc.adapter.in.rest.mapper.PinFunctionsResponseMapper;
 import com.bc.application.domain.PinFunctionsResponse;
 import com.bc.application.port.in.rest.client.PinFunctions;
 import com.bc.application.port.in.rest.command.GeneratePinCommand;
-import com.bc.application.port.in.rest.mapper.PinFunctionsRequestMapper;
 import com.bc.application.service.impl.PinFunctionsServiceImpl;
+import com.bc.exception.CommonException;
 import com.bc.model.dto.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,7 +33,7 @@ public class PinFunctionsImpl implements PinFunctions {
     public Response generatePin(GeneratePinRequest generatePinRequest) {
 
         log.debug("Generate PIN Request received: {}.", generatePinRequest.toString());
-        // Build command object from DTO
+        // Build GeneratePINCommand object build from Generate PIN Request DTO
         GeneratePinCommand generatePinCommand = GeneratePinCommand.builder()
                 .pan(generatePinRequest.getPan())
                 .pinVerificationKey(generatePinRequest.getPinVerificationKey())
@@ -40,11 +41,18 @@ public class PinFunctionsImpl implements PinFunctions {
                 .pinOffset(generatePinRequest.getPinOffset())
                 .build();
         // Call service to generate PIN and map response to Dto
-        PinFunctionsResponse pinFunctionsResponse = pinFunctionsService.generatePin(generatePinCommand);
+        PinFunctionsResponse pinFunctionsResponse = pinFunctionsService
+                .generatePin(generatePinCommand);
+        // Map domain response object to Generate PIN Response DTO
         GeneratePinResponse generatePinResponse = pinFunctionsResponseMapper
                 .mapPinFunctionResponseToGeneratePinResponseDto(pinFunctionsResponse);
         // Build REST API response
-        return Response.ok().entity(generatePinResponse).build();
+        return Response
+                .status(Response.Status.CREATED)
+                .entity(generatePinResponse)
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .build();
+
     }
 
     /**

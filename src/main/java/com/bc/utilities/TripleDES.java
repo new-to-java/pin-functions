@@ -1,5 +1,7 @@
 package com.bc.utilities;
 
+import com.bc.exception.CommonException;
+import jakarta.ws.rs.core.Response;
 import lombok.AccessLevel;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,8 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import static com.bc.exception.ErrorConstants.*;
+
 /**
  * Class implementing wrapper functions for Triple Data Encryption Standard (TDES) Algorithm functions
  * using java standard Crypto libraries.
@@ -94,9 +98,8 @@ public class TripleDES {
             des = Cipher.getInstance(algorithmWithModeAndPadding.toString());
         } catch (NoSuchPaddingException |
                  NoSuchAlgorithmException cipherException) {
-            throwExceptionAndTerminate("Cipher object algorithm initialization failed",
-                    cipherException
-            );
+            log.debug(ERR_CRYINAL000 + MSG_CIPHER_ALGORITHM_INIT_FAILURE);
+            throwExceptionAndTerminate(ERR_CRYINAL000);
         }
     }
     /**
@@ -110,9 +113,8 @@ public class TripleDES {
                     DES_EDE
             );
         } catch (DecoderException decoderException){
-            throwExceptionAndTerminate("Key decoding to byte array failed - ",
-                    decoderException
-            );
+            log.debug(ERR_CRYINKY000 + MSG_CIPHER_KEY_INIT_FAILURE);
+            throwExceptionAndTerminate(ERR_CRYINKY000);
         }
     }
     /**
@@ -124,8 +126,8 @@ public class TripleDES {
                     secretKey
             );
         } catch (InvalidKeyException invalidKeyException){
-            throwExceptionAndTerminate("Cipher object initialization failed due to invalid key",
-                    invalidKeyException);
+            log.debug(ERR_CRYINKY001 + MSG_CIPHER_ENC_KEY_INVALID_FAILURE);
+            throwExceptionAndTerminate(ERR_CRYINKY001);
         }
     }
     /**
@@ -137,8 +139,8 @@ public class TripleDES {
                     secretKey
             );
         } catch (InvalidKeyException invalidKeyException) {
-            throwExceptionAndTerminate("Cipher object initialization failed due to invalid key",
-                    invalidKeyException);
+            log.debug(ERR_CRYINKY002 + MSG_CIPHER_DEC_KEY_INVALID_FAILURE);
+            throwExceptionAndTerminate(ERR_CRYINKY002);
         }
     }
     /**
@@ -149,9 +151,8 @@ public class TripleDES {
         try {
             decodedHexData = Hex.decodeHex(inputData);
         } catch (DecoderException decoderException){
-            throwExceptionAndTerminate("Clear text data decoding to byte array failed",
-                    decoderException
-            );
+            log.debug(ERR_CRYTEXT000 + MSG_CIPHER_TEXT_DECODE_FAILURE);
+            throwExceptionAndTerminate(ERR_CRYTEXT000);
         }
         return decodedHexData;
     }
@@ -165,8 +166,8 @@ public class TripleDES {
             cryptoOutputData = des.doFinal(decodedInputData);
         } catch (IllegalBlockSizeException |
                  BadPaddingException cryptoException){
-            throwExceptionAndTerminate("Encrypt/Decrypt operation failed",
-                    cryptoException);
+            log.debug(ERR_CRYENDE000 + MSG_CIPHER_ENC_DEC_OPERATION_FAILURE);
+            throwExceptionAndTerminate(ERR_CRYENDE000);
         }
         return cryptoOutputData;
     }
@@ -217,18 +218,12 @@ public class TripleDES {
     }
     /**
      * Method to raise an exception and terminate processing.
-     * @param exception Generic exception object.
-     * @param message Message to be included in the exception.
+     * @param errorCode Error code to uniquely identify the exception reason.
      */
-    private static void throwExceptionAndTerminate(String message,
-                                                   Exception exception) {
-        throw new RuntimeException(TripleDES.class +
-                " --> " +
-                message +
-                " Cause: " +
-                exception.getCause() +
-                " Message: " +
-                exception.getMessage()
+    private static void throwExceptionAndTerminate(String errorCode) {
+        throw new CommonException("Technical exception encountered, please contact programmer.",
+                errorCode,
+                Response.Status.INTERNAL_SERVER_ERROR
         );
     }
 }
