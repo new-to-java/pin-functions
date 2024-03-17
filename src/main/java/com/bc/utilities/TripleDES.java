@@ -75,6 +75,7 @@ public class TripleDES {
      *                else the Cipher object will be set to DESede decrypt.
      */
     private static void initialize(boolean encrypt) {
+        log.debug(TripleDES.class + " input data: {}, key: {}.", inputData, key);
         initializeDESAlgorithm();
         initializeDESedeKey();
         if (encrypt) {
@@ -98,6 +99,7 @@ public class TripleDES {
             des = Cipher.getInstance(algorithmWithModeAndPadding.toString());
         } catch (NoSuchPaddingException |
                  NoSuchAlgorithmException cipherException) {
+            exceptionLogger(cipherException);
             log.debug(ERR_CRYINAL000 + MSG_CIPHER_ALGORITHM_INIT_FAILURE);
             throwExceptionAndTerminate(ERR_CRYINAL000);
         }
@@ -113,6 +115,7 @@ public class TripleDES {
                     DES_EDE
             );
         } catch (DecoderException decoderException){
+            exceptionLogger(decoderException);
             log.debug(ERR_CRYINKY000 + MSG_CIPHER_KEY_INIT_FAILURE);
             throwExceptionAndTerminate(ERR_CRYINKY000);
         }
@@ -126,6 +129,7 @@ public class TripleDES {
                     secretKey
             );
         } catch (InvalidKeyException invalidKeyException){
+            exceptionLogger(invalidKeyException);
             log.debug(ERR_CRYINKY001 + MSG_CIPHER_ENC_KEY_INVALID_FAILURE);
             throwExceptionAndTerminate(ERR_CRYINKY001);
         }
@@ -139,6 +143,7 @@ public class TripleDES {
                     secretKey
             );
         } catch (InvalidKeyException invalidKeyException) {
+            exceptionLogger(invalidKeyException);
             log.debug(ERR_CRYINKY002 + MSG_CIPHER_DEC_KEY_INVALID_FAILURE);
             throwExceptionAndTerminate(ERR_CRYINKY002);
         }
@@ -151,6 +156,7 @@ public class TripleDES {
         try {
             decodedHexData = Hex.decodeHex(inputData);
         } catch (DecoderException decoderException){
+            exceptionLogger(decoderException);
             log.debug(ERR_CRYTEXT000 + MSG_CIPHER_TEXT_DECODE_FAILURE);
             throwExceptionAndTerminate(ERR_CRYTEXT000);
         }
@@ -166,6 +172,7 @@ public class TripleDES {
             cryptoOutputData = des.doFinal(decodedInputData);
         } catch (IllegalBlockSizeException |
                  BadPaddingException cryptoException){
+            exceptionLogger(cryptoException);
             log.debug(ERR_CRYENDE000 + MSG_CIPHER_ENC_DEC_OPERATION_FAILURE);
             throwExceptionAndTerminate(ERR_CRYENDE000);
         }
@@ -226,4 +233,14 @@ public class TripleDES {
                 Response.Status.INTERNAL_SERVER_ERROR
         );
     }
+
+    /**
+     * Generic private exception logger method for logging a more detailed error details.
+     * @param e Exception object thrown
+     */
+    private static void exceptionLogger(Exception e){
+        log.debug(TripleDES.class + " has thrown exception \"{}\".", e.getClass().getSimpleName());
+        log.debug(TripleDES.class + " Exception message \"{}\".", e.getMessage());
+    }
+
 }

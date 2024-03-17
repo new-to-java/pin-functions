@@ -93,9 +93,7 @@ public class PinFunctionsImpl implements PinFunctions {
                 .setPvvKey(generatePVVRequest.getPvvKey())
                 .build();
         // Call Pvv Functions Service and generate PVV
-        log.debug("Service being called!");
         PvvFunctionsResponse pvvFunctionsResponse = pvvFunctionsService.generatePvv(generatePvvCommand);
-        log.debug("Service has been called successfully!");
         // Map domain response object to Generate PVV Response DTO
         GeneratePvvResponse generatePvvResponse = pvvFunctionsResponseMapper
                 .mapPvvFunctionResponseToGeneratePvvResponseDto(pvvFunctionsResponse);

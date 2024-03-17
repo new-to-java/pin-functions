@@ -133,7 +133,7 @@ public class GenerateVisaPvv {
             this.tsp.append(pan, PAN_EXTRACT_START_INDEX, PAN_EXTRACT_END_INDEX);
             this.tsp.append(pvvKeyIndex);
             // PIN is being trimmed to 4 bytes, since regardless of the PIN length, the PVV seems to be always 4 digits
-            // so left most 4 digits are always extracted and included in TSP derivation
+            // so left most 4 digits are always extracted and included in TSP derivation. This needs to be confirmed.
             this.tsp.append(pin, PIN_EXTRACT_START_INDEX, PIN_EXTRACT_END_INDEX);
             return this;
         }
