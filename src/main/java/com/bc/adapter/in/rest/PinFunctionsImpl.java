@@ -5,7 +5,6 @@ import com.bc.application.domain.PinFunctionsResponse;
 import com.bc.application.port.in.rest.client.PinFunctions;
 import com.bc.application.port.in.rest.command.GeneratePinCommand;
 import com.bc.application.service.impl.PinFunctionsServiceImpl;
-import com.bc.exception.CommonException;
 import com.bc.model.dto.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
