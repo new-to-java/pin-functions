@@ -9,11 +9,11 @@ import lombok.Getter;
 @Getter
 public class GenerateIBM3624Pin {
 
-    private String pan;
-    private String pin;
-    private String pinLength;
-    private String intermediatePin;
-    private String pinOffset;
+    private final String pan;
+    private final String pin;
+    private final String pinLength;
+    private final String intermediatePin;
+    private final String pinOffset;
 
     /**
      * Private constructor to be used by the builder pattern method to instantiate the object.

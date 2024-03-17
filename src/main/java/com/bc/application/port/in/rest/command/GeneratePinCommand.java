@@ -14,10 +14,10 @@ import static com.bc.exception.ErrorConstants.*;
 @Slf4j
 public class GeneratePinCommand {
 
-    private String pan;
-    private String pinVerificationKey;
-    private String pinLength;
-    private String pinOffset;
+    private final String pan;
+    private final String pinVerificationKey;
+    private final String pinLength;
+    private final String pinOffset;
 
     /**
      * Constructor for builder to instantiate the Generate Pin Command object

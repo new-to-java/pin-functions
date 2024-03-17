@@ -14,13 +14,13 @@ public interface PvvFunctionsService {
      * @param generatePvvCommand Command object for PVV generation.
      * @return Generic PVV Functions response object.
      */
-    public PvvFunctionsResponse generatePvv(GeneratePvvCommand generatePvvCommand);
+    PvvFunctionsResponse generatePvv(GeneratePvvCommand generatePvvCommand);
 
     /**
      * Method for verifying a Visa PVV
      * @param verifyPvvCommand Command object for PVV verification.
      * @return Generic PVV Functions response object.
      */
-    public PvvFunctionsResponse verifyPvv(VerifyPvvCommand verifyPvvCommand);
+    PvvFunctionsResponse verifyPvv(VerifyPvvCommand verifyPvvCommand);
 
 }

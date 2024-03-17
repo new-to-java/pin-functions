@@ -12,8 +12,8 @@ import java.util.regex.Pattern;
 @Slf4j
 public class GenerateVisaPvv {
 
-    private String pin;
-    private String pvv;
+    private final String pin;
+    private final String pvv;
 
     /**
      * Private constructor to be used by the builder pattern method to instantiate the object.

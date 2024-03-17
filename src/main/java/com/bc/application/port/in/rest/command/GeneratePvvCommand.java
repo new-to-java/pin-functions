@@ -11,10 +11,10 @@ import static com.bc.exception.ErrorConstants.*;
 @Slf4j
 public class GeneratePvvCommand {
 
-    private String pan;
-    private String pin;
-    private String pvvKeyIndex;
-    private String pvvKey;
+    private final String pan;
+    private final String pin;
+    private final String pvvKeyIndex;
+    private final String pvvKey;
 
     /**
      * Private constructor to be used by the builder class to instantiate the Visa Pin Verification Value
