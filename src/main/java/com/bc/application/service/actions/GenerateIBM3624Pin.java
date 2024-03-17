@@ -2,11 +2,13 @@ package com.bc.application.service.actions;
 
 import com.bc.utilities.TripleDES;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class defines methods required for generating an IBM 3624 PIN based on an offset.
  */
 @Getter
+@Slf4j
 public class GenerateIBM3624Pin {
 
     private final String pan;
@@ -148,6 +150,7 @@ public class GenerateIBM3624Pin {
             final int PIN_VALIDATION_DATA_LENGTH = 16;
             final String PAD_CHARACTER = "0";
             // Pad PAN with "0" to the right, if less than 16
+            log.debug(this.getClass().getSimpleName() + " Pan received: {}.", pan);
             if (pan.length() < PIN_VALIDATION_DATA_LENGTH) {
                 this.pinValidationData = pan + PAD_CHARACTER.repeat(PIN_VALIDATION_DATA_LENGTH - pan.length());
             } else {
@@ -165,6 +168,7 @@ public class GenerateIBM3624Pin {
          */
         @Override
         public DecimaliseEncryptedValidationData encryptPinValidationData(String pinVerificationKey) {
+            log.debug(this.getClass().getSimpleName() + " PinVerificationKey received: {}.", pinVerificationKey);
             encryptedPinValidationData = TripleDES.encrypt(pinValidationData, pinVerificationKey);
             return this;
         }
@@ -177,6 +181,7 @@ public class GenerateIBM3624Pin {
          */
         @Override
         public TruncateToPinLength decimaliseEncryptedValidationData(String decimalisationTable) {
+            log.debug(this.getClass().getSimpleName() + " Decimalistion table received: {}.", decimalisationTable);
             char [] encryptedValidationDataArray = encryptedPinValidationData.toCharArray();
             char [] decimalisationTableArray = decimalisationTable.toCharArray();
             StringBuilder decimalisedPinValidationData = new StringBuilder();
@@ -195,6 +200,7 @@ public class GenerateIBM3624Pin {
          */
         @Override
         public AddPinOffset truncateToPinLength (String pinLength) {
+            log.debug(this.getClass().getSimpleName() + " PinLength received: {}.", pinLength);
             this.pinLength = pinLength;
             intermediatePin = intermediatePin.substring(0, Integer.parseInt(pinLength));
             return this;
@@ -208,6 +214,7 @@ public class GenerateIBM3624Pin {
          */
         @Override
         public GenerateResponse addPinOffset(String pinOffset) {
+            log.debug(this.getClass().getSimpleName() + " PinOffset received: {}.", pinOffset);
             StringBuilder offsetAdjustedPin = new StringBuilder();
             String adjustedPinOffset = pinOffset.substring(pinOffset.length() - Integer.parseInt(pinLength));
             for(int i = 0; i < adjustedPinOffset.length(); i++){

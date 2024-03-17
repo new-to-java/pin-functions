@@ -134,6 +134,7 @@ public class GeneratePinCommand {
          */
         @Override
         public Builder pan(String pan) {
+            log.debug(this.getClass().getSimpleName() + " Pan received: {}.", pan);
             if (Validator.isPanValid(pan)) {
                 this.pan = pan;
             } else {
@@ -151,6 +152,7 @@ public class GeneratePinCommand {
          */
         @Override
         public Builder pinVerificationKey(String pinVerificationKey) {
+            log.debug(this.getClass().getSimpleName() + " PinVerificationKey received: {}.", pinVerificationKey);
             if (Validator.isTdeaKeyValid(pinVerificationKey)) {
                 this.pinVerificationKey = pinVerificationKey;
             } else {
@@ -168,6 +170,7 @@ public class GeneratePinCommand {
          */
         @Override
         public Builder pinLength(String pinLength){
+            log.debug(this.getClass().getSimpleName() + " PinLength received: {}.", pinLength);
             if (Validator.isPinLengthValid(pinLength)) {
                 this.pinLength = pinLength;
             } else {
@@ -185,6 +188,7 @@ public class GeneratePinCommand {
          */
         @Override
         public Builder pinOffset(String pinOffset){
+            log.debug(this.getClass().getSimpleName() + " PinOffset received: {}.", pinOffset);
             if (Validator.isPinOffsetValid(pinLength, pinOffset)) {
                 this.pinOffset = pinOffset;
             } else {

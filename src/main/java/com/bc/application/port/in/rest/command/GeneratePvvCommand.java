@@ -129,6 +129,7 @@ public class GeneratePvvCommand {
          */
         @Override
         public PinSetter setPan(String pan) {
+            log.debug(this.getClass().getSimpleName() + " Pan received: {}.", pan);
             if (Validator.isPanValid(pan)){
                 this.pan = pan;
             } else {
@@ -147,6 +148,7 @@ public class GeneratePvvCommand {
          */
         @Override
         public PvvKeyIndexSetter setPin(String pin) {
+            log.debug(this.getClass().getSimpleName() + " Pin received: {}.", pin);
             if (Validator.isPinValid(pin)){
                 this.pin = pin;
             } else {
@@ -165,6 +167,7 @@ public class GeneratePvvCommand {
          */
         @Override
         public PvvKeySetter setPvvKeyIndex(String pvvKeyIndex) {
+            log.debug(this.getClass().getSimpleName() + " PvvKeyIndex received: {}.", pvvKeyIndex);
             if (Validator.isKeyIndexValid(pvvKeyIndex)){
                 this.pvvKeyIndex = pvvKeyIndex;
             } else{
@@ -183,6 +186,7 @@ public class GeneratePvvCommand {
          */
         @Override
         public FinishBuild setPvvKey(String pvvKey) {
+            log.debug(this.getClass().getSimpleName() + " PvvKey received: {}.", pvvKey);
             if (Validator.isTdeaKeyValid(pvvKey)){
                 this.pvvKey = pvvKey;
             } else {

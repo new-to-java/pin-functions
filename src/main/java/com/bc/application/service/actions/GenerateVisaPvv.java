@@ -120,6 +120,9 @@ public class GenerateVisaPvv {
          */
         @Override
         public EncryptTspWithPvvKey buildTransformedSecurityParameter(String pan, String pvvKeyIndex, String pin) {
+            log.debug(this.getClass().getSimpleName() + " Pan received: {}.", pan);
+            log.debug(this.getClass().getSimpleName() + " PvvKeyIndex received: {}.", pvvKeyIndex);
+            log.debug(this.getClass().getSimpleName() + " Pin received: {}.", pin);
             // 16 digit PAN assumed
             final int PAN_EXTRACT_START_INDEX = 4; //Start from 5th digit
             final int PAN_EXTRACT_END_INDEX = 15; // Exclude check digit
@@ -146,6 +149,7 @@ public class GenerateVisaPvv {
          */
         @Override
         public GetPinVerificationValue encryptTspWithPvvKey(String pvvKey) {
+            log.debug(this.getClass().getSimpleName() + " PvvKey received: {}.", pvvKey);
             encryptedTsp = TripleDES.encrypt(tsp.toString(), pvvKey);
             return this;
         }
@@ -157,7 +161,6 @@ public class GenerateVisaPvv {
          */
         @Override
         public FinishBuild getPinVerificationValue() {
-
             StringBuilder numericTspDigits = new StringBuilder();
             StringBuilder decimalisedTspDigits = new StringBuilder();
             // Extract PVV from encrypted TSP
