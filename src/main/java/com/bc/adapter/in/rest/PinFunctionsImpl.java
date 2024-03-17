@@ -1,10 +1,14 @@
 package com.bc.adapter.in.rest;
 
 import com.bc.adapter.in.rest.mapper.PinFunctionsResponseMapper;
+import com.bc.adapter.in.rest.mapper.PvvFunctionsResponseMapper;
 import com.bc.application.domain.PinFunctionsResponse;
+import com.bc.application.domain.PvvFunctionsResponse;
 import com.bc.application.port.in.rest.client.PinFunctions;
 import com.bc.application.port.in.rest.command.GeneratePinCommand;
+import com.bc.application.port.in.rest.command.GeneratePvvCommand;
 import com.bc.application.service.impl.PinFunctionsServiceImpl;
+import com.bc.application.service.impl.PvvFunctionsServiceImpl;
 import com.bc.model.dto.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -17,10 +21,16 @@ import lombok.extern.slf4j.Slf4j;
 public class PinFunctionsImpl implements PinFunctions {
 
     @Inject
+    PinFunctionsServiceImpl pinFunctionsService;
+
+    @Inject
     PinFunctionsResponseMapper pinFunctionsResponseMapper;
 
     @Inject
-    PinFunctionsServiceImpl pinFunctionsService;
+    PvvFunctionsServiceImpl pvvFunctionsService;
+
+    @Inject
+    PvvFunctionsResponseMapper pvvFunctionsResponseMapper;
 
     /**
      * Rest API endpoint for generating a clear text PIN.
@@ -32,7 +42,7 @@ public class PinFunctionsImpl implements PinFunctions {
     public Response generatePin(GeneratePinRequest generatePinRequest) {
 
         log.debug("Generate PIN Request received: {}.", generatePinRequest.toString());
-        // Build GeneratePINCommand object build from Generate PIN Request DTO
+        // Build GeneratePINCommand object from Generate PIN Request DTO
         GeneratePinCommand generatePinCommand = GeneratePinCommand.builder()
                 .pan(generatePinRequest.getPan())
                 .pinVerificationKey(generatePinRequest.getPinVerificationKey())
@@ -74,7 +84,26 @@ public class PinFunctionsImpl implements PinFunctions {
      */
     @Override
     public Response generatePvv(GeneratePvvRequest generatePVVRequest) {
-        return null;
+        log.debug("Generate PVV Request received: {}.", generatePVVRequest.toString());
+        // Build Generate PVV Command request object from Generate PVV Request DTO
+        GeneratePvvCommand generatePvvCommand = GeneratePvvCommand.builder()
+                .setPan(generatePVVRequest.getPan())
+                .setPin(generatePVVRequest.getPin())
+                .setPvvKeyIndex(generatePVVRequest.getPvvKeyIndex())
+                .setPvvKey(generatePVVRequest.getPvvKey())
+                .build();
+        // Call Pvv Functions Service and generate PVV
+        log.debug("Service being called!");
+        PvvFunctionsResponse pvvFunctionsResponse = pvvFunctionsService.generatePvv(generatePvvCommand);
+        log.debug("Service has been called successfully!");
+        // Map domain response object to Generate PVV Response DTO
+        GeneratePvvResponse generatePvvResponse = pvvFunctionsResponseMapper
+                .mapPvvFunctionResponseToGeneratePvvResponseDto(pvvFunctionsResponse);
+        // Build REST API response
+        return Response
+                .status(Response.Status.CREATED)
+                .entity(generatePvvResponse)
+                .build();
     }
 
     /**

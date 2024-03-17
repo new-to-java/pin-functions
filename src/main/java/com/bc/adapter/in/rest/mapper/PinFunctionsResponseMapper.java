@@ -10,9 +10,9 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "cdi")
 public interface PinFunctionsResponseMapper {
     /**
-     * Mapper method for mapping PINFunctionsResponse core domain response object to Generate PIN Response.
-     * @param pinFunctionsResponse GeneratePinCommand object.
-     * @return PinFunctionsRequest domain object.
+     * Mapper method for mapping PinFunctionsResponse core domain response object to Generate PIN Response DTO.
+     * @param pinFunctionsResponse GeneratePinCommand core domain response object.
+     * @return PinFunctionsRequest DTO object.
      */
     GeneratePinResponse mapPinFunctionResponseToGeneratePinResponseDto(PinFunctionsResponse pinFunctionsResponse);
 

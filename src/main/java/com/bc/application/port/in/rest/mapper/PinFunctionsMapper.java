@@ -10,7 +10,7 @@ import org.mapstruct.Mapper;
  * Mapper interface for mapping Generate PIN request to PinFunctionsRequest domain object.
  */
 @Mapper(componentModel = "cdi")
-public interface PinFunctionsRequestMapper {
+public interface PinFunctionsMapper {
     /**
      * Mapper method for mapping GeneratePinCommand object to PinFunctions core domain request object.
      * @param generatePinCommand GeneratePinCommand object.

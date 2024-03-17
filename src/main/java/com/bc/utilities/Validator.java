@@ -1,11 +1,13 @@
 package com.bc.utilities;
 
+import lombok.extern.slf4j.Slf4j;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
  * Utility class hosting methods for performing data validations
  */
+@Slf4j
 public class Validator {
 
     /**
@@ -20,14 +22,14 @@ public class Validator {
     }
 
     /**
-     * Verify input pinVerificationKey and ensure it contains either 16, 32 or 48 hexadecimal digits only.
-     * @param pinVerificationKey PIN Verification Key to be verified.
+     * Verify input Tdea Key and ensure it contains either 16, 32 or 48 hexadecimal digits only.
+     * @param tdeaKey PIN Verification Key to be verified.
      * @return True when pinVerificationKey is valid, else returns False.
      */
-    public static boolean isPinVerificationKeyValid(String pinVerificationKey){
-        final String PVK_PATTERN = "^[\\dA-Fa-f]{16}|\\d{32}|\\d{48}$";
-        return Objects.nonNull(pinVerificationKey) &&
-                Pattern.matches(PVK_PATTERN, pinVerificationKey);
+    public static boolean isTdeaKeyValid(String tdeaKey){
+        final String TDEA_KEY_PATTERN = "^[\\dA-Fa-f]{16}|\\d{32}|\\d{48}$";
+        return Objects.nonNull(tdeaKey) &&
+                Pattern.matches(TDEA_KEY_PATTERN, tdeaKey);
     }
 
     /**
@@ -43,7 +45,27 @@ public class Validator {
         }
         return Objects.nonNull(pinLength) &&
                 Pattern.matches(PIN_LENGTH_PATTERN, pinLength) &&
-                (parsedPinLength >= 4 && parsedPinLength <= 12);
+                ((parsedPinLength >= 4 &&
+                        parsedPinLength <= 12));
+    }
+
+
+    /**
+     * Verify input keyIndex and ensure it contains decimal digits only and is in the range 1 to 9.
+     * @param keyIndex Key Index to be verified.
+     * @return True when keyIndex is valid, else returns False.
+     */
+    public static boolean isKeyIndexValid(String keyIndex){
+        final String KEY_INDEX_PATTERN = "^[1-9]$";
+        int parsedKeyIndex = 0;
+        boolean isNotNullAndMatchesPattern = false;
+        if ((Objects.nonNull(keyIndex)) && (Pattern.matches(KEY_INDEX_PATTERN, keyIndex))) {
+            isNotNullAndMatchesPattern = true;
+            parsedKeyIndex = Integer.parseInt(keyIndex);
+        }
+        return isNotNullAndMatchesPattern &&
+                ((parsedKeyIndex >= 1 &&
+                        parsedKeyIndex <= 9));
     }
 
     /**
@@ -62,6 +84,20 @@ public class Validator {
                 // must be comprised of 4 to 12 digits
                 ((pinOffset.length() >= 4) &&
                         (pinOffset.length() <= 12));
+    }
+
+    /**
+     * Verify input pin and ensure it contains decimal digits only and is 4 to 12 digits long.
+     * @param pin PIN to be verified.
+     * @return True when pin is valid, else returns False.
+     */
+    public static boolean isPinValid(String pin){
+        final String PIN_PATTERN = "^\\d{1,12}$";
+        return Objects.nonNull(pin) &&
+                Pattern.matches(PIN_PATTERN, pin) && // Must be all numeric digits
+                // must be comprised of 4 to 12 digits
+                ((pin.length() >= 4) &&
+                        (pin.length() <= 12));
     }
 
 }

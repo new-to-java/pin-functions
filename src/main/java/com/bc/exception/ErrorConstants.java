@@ -25,6 +25,15 @@ public class ErrorConstants {
     public static final String ERR_PINFNGN003 = "PINFNGN003";
     public static final String MSG_GEN_PIN_CMD_PIN_LEN_INVALID = "PIN Length must be numeric, and in the range 4 to 12.";
     public static final String ERR_PINFNGN004 = "PINFNGN004";
-    public static final String MSG_GEN_PIN_CMD_PIN_OFFSET_INVALID = "PIN Offset length must be greater than or equal to PIN Length, and between 4 and 12 digits.";
+    public static final String MSG_GEN_PIN_CMD_PIN_OFFSET_INVALID = "PIN Offset length must be greater than or equal to PIN Length, and must be comprised of 4 to 12 digits.";
+    // GeneratePvvCommand - Error codes and error message definitions.
+    public static final String ERR_PVVFNGN001 = "PVVFNGN001";
+    public static final String MSG_GEN_PVV_CMD_PAN_NOT_NUM = "PAN must be numeric and 16 digits long.";
+    public static final String ERR_PVVFNGN002 = "PVVFNGN002";
+    public static final String MSG_GEN_PVV_CMD_PIN_INVALID = "PIN must be numeric, and length of PIN must be in the range 4 to 12.";
+    public static final String ERR_PVVFNGN003 = "PVVFNGN003";
+    public static final String MSG_GEN_PVV_CMD_PVK_INVALID = "PIN Verification Value Key (PVV Key) must be comprised of 16, 32, 48 hexadecimal digits only.";
+    public static final String ERR_PVVFNGN004 = "PVVFNGN004";
+    public static final String MSG_GEN_PVV_CMD_PIN_KEY_INDEX_INVALID = "PIN Key Index must be numeric and in the range 1 and 9.";
 
 }

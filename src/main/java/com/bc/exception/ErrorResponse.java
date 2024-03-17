@@ -15,7 +15,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 public class ErrorResponse {
 
     @JsonProperty("Status:")
-    @Schema(example = "HttpStatusCode")
+    @Schema(example = "<HttpStatusCode>")
     Response.Status httpStatusCode;
     @JsonProperty("ErrorCode:")
     private String errorCode;

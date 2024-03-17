@@ -1,28 +1,19 @@
-package com.bc.model.dto;
+package com.bc.application.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import lombok.Setter;
 
 /**
- * This class defines the attributes for PIN Generation REST API request.
+ * PVV Functions core domain class defining the attributes required for making requests to various PVV functions
+ * from the domain service.
  */
 @Getter
-@AllArgsConstructor
-public class GeneratePvvRequest {
+@Setter
+public class PvvFunctionsRequest {
 
-    @JsonProperty("Pan")
-    @Schema(example = "4123456789012345")
     private String pan;
-    @JsonProperty("Pin")
-    @Schema(example = "1234")
     private String pin;
-    @JsonProperty("PvvKeyIndex")
-    @Schema(example = "1")
     private String pvvKeyIndex;
-    @JsonProperty("PvvKey")
-    @Schema(example = "F0F0F0F0F0F0F0F0")
     private String pvvKey;
 
     /**

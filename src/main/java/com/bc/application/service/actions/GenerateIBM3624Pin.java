@@ -16,8 +16,8 @@ public class GenerateIBM3624Pin {
     private String pinOffset;
 
     /**
-     * Private constructor to be used by the builder pattern method to instantiate the object and call methods.
-     * @param builder Builder pattern class for generating an IBM 3624 PIN based on an offset.
+     * Private constructor to be used by the builder pattern method to instantiate the object.
+     * @param builder Builder pattern object with values set.
      */
     private GenerateIBM3624Pin(Builder builder) {
 
@@ -28,6 +28,10 @@ public class GenerateIBM3624Pin {
         this.pinOffset = builder.pinOffset;
     }
 
+    /**
+     * Override default toString method to generate a string representation of class attributes for logging.
+     * @return String representation of class attributes.
+     */
     @Override
     public String toString(){
         return this.getClass().getSimpleName() +
@@ -39,6 +43,7 @@ public class GenerateIBM3624Pin {
                 "pinOffset: " + pinOffset +
                 " }";
     }
+
     /**
      * Public builder method for initiating sequential builder methods for IBM 3624 PIN generation.
      * @return new Builder class instance.

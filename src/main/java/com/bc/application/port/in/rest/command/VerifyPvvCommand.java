@@ -1,6 +1,6 @@
 package com.bc.application.port.in.rest.command;
 
-public class VerifyPinCommand {
+public class VerifyPvvCommand {
 
 
 

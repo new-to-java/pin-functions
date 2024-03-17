@@ -4,7 +4,6 @@ import com.bc.exception.CommonException;
 import com.bc.utilities.Validator;
 import jakarta.ws.rs.core.Response;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import static com.bc.exception.ErrorConstants.*;
 
@@ -12,7 +11,6 @@ import static com.bc.exception.ErrorConstants.*;
  * Command object for Generate PIN request
  */
 @Getter
-@Setter
 @Slf4j
 public class GeneratePinCommand {
 
@@ -35,6 +33,10 @@ public class GeneratePinCommand {
 
     }
 
+    /**
+     * Override default toString method to generate a string representation of class attributes for logging.
+     * @return String representation of class attributes.
+     */
     @Override
     public String toString(){
         return this.getClass().getSimpleName() +
@@ -149,7 +151,7 @@ public class GeneratePinCommand {
          */
         @Override
         public Builder pinVerificationKey(String pinVerificationKey) {
-            if (Validator.isPinVerificationKeyValid(pinVerificationKey)) {
+            if (Validator.isTdeaKeyValid(pinVerificationKey)) {
                 this.pinVerificationKey = pinVerificationKey;
             } else {
                 throw new CommonException(MSG_GEN_PIN_CMD_PVK_INVALID,

@@ -3,7 +3,6 @@ package com.bc.application.port.in.rest.client;
 import com.bc.exception.ErrorResponse;
 import com.bc.model.dto.*;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -35,7 +34,7 @@ public interface PinFunctions {
     @POST
     @Operation(
             operationId = "IBM3624Pin",
-            summary = "Generate IBM 3624 PIN based on offset.",
+            summary = "Generate an IBM 3624 PIN based on offset.",
             description = "This REST API allows the user to request generation of an IBM 3624 PIN " +
                     "for a given Pan, PinVerificationKey, PinLength and PinOffset supplied. " +
                     "The PIN length supplied must be a number in the range 4 to 12."
@@ -47,7 +46,7 @@ public interface PinFunctions {
     )
     @APIResponse(
             responseCode = "400",
-            description = "[Bad Request] Request validation failure.",
+            description = "[Bad Request] Request payload verification failed.",
             content = @Content(schema = @Schema(implementation = ErrorResponse.class))
     )
     @APIResponse(
@@ -61,7 +60,7 @@ public interface PinFunctions {
                     required = true,
                     content = @Content(schema = @Schema(implementation = GeneratePinRequest.class))
             )
-            @Valid GeneratePinRequest generatePINRequest
+            GeneratePinRequest generatePINRequest
     );
 
     /**
@@ -70,44 +69,72 @@ public interface PinFunctions {
      * @param verifyPINRequest PIN verification request.
      * @return PIN verification response.
      */
-    @Path("/VerifyPin")
+    @Path("/Verify/Pin")
     @POST
-    Response verifyPin(@Valid VerifyPinRequest verifyPINRequest);
+    Response verifyPin(VerifyPinRequest verifyPINRequest);
 
     /**
      * Rest API endpoint for generating PVV.
      * @param generatePVVRequest PVV generation request.
      * @return PVV generation response.
      */
-    @Path("/GeneratePvv")
+    @Path("/Generate/Pvv")
     @POST
-    Response generatePvv(@Valid GeneratePvvRequest generatePVVRequest);
+    @Operation(
+            operationId = "generatePvv",
+            summary = "Generate a Visa PIN Verification Value (PVV).",
+            description = "This REST API allows the user to request generation of a Visa PIN " +
+                    "Verification Value (PVV) for a given Pan, Pin, PvvKeyIndex and PvvKey supplied. " +
+                    "The PIN length supplied must be a number in the range 4 to 12."
+    )
+    @APIResponse(
+            description = "[Created] Visa PIN Verification Value generated successfully.",
+            responseCode = "201",
+            content = @Content(schema = @Schema(implementation = GeneratePvvResponse.class))
+    )
+    @APIResponse(
+            description = "[Bad Request] Request payload verification failed.",
+            responseCode = "400",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+    )
+    @APIResponse(
+            description = "[Internal Server Error] Server encountered an error while processing the request, if problem persists contact programmer.",
+            responseCode = "500",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+    )
+    Response generatePvv(@RequestBody(
+            description = "Visa PIN Verification Value generation request.",
+            required = true,
+            content = @Content(schema = @Schema(implementation = GeneratePvvRequest.class))
+    )
+            GeneratePvvRequest generatePVVRequest
+    );
 
     /**
      * Rest API endpoint for verifying PVV.
      * @param verifyPVVRequest PVV verification request.
      * @return PVV verification response.
      */
-    @Path("/VerifyPvv")
+    @Path("/Verify/Pvv")
     @POST
-    Response verifyPvv(@Valid VerifyPvvRequest verifyPVVRequest);
+    Response verifyPvv(VerifyPvvRequest verifyPVVRequest);
 
     /**
      * Rest API endpoint for encrypting a cleartext PIN and generating a PIN block.
      * @param encryptPin PIN encryption request.
      * @return PVV encryption response.
      */
-    @Path("/EncryptPin")
+    @Path("/Encrypt/Pin")
     @POST
-    Response encryptPin(@Valid EncryptPin encryptPin);
+    Response encryptPin(EncryptPin encryptPin);
 
     /**
      * Rest API endpoint for decrypting a PIN block and extracting clear PIN along with PIN details.
      * @param decryptPin PIN decryption request.
      * @return PVV encryption response.
      */
-    @Path("/DecryptPin")
+    @Path("/Decrypt/Pin")
     @POST
-    Response decryptPin(@Valid DecryptPin decryptPin);
+    Response decryptPin(DecryptPin decryptPin);
 
 }
