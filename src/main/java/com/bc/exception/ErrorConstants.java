@@ -35,5 +35,16 @@ public class ErrorConstants {
     public static final String MSG_GEN_PVV_CMD_PVK_INVALID = "PIN Verification Value Key (PVV Key) must be comprised of 16, 32, 48 hexadecimal digits only.";
     public static final String ERR_PVVFNGN004 = "PVVFNGN004";
     public static final String MSG_GEN_PVV_CMD_PIN_KEY_INDEX_INVALID = "PIN Key Index must be numeric and in the range 1 and 9.";
+    // VerifyPinCommand - Error codes and error message definitions.
+    public static final String ERR_PINFNVR001 = "PINFNVR001";
+    public static final String MSG_VER_PIN_CMD_PAN_NOT_NUM = "PAN must be numeric and 16 digits long.";
+    public static final String ERR_PINFNVR002 = "PINFNVR002";
+    public static final String MSG_VER_PIN_CMD_PVK_INVALID = "PIN Verification Key (PVK) must be comprised of 16, 32, 48 hexadecimal digits only.";
+    public static final String ERR_PINFNVR003 = "PINFNVR003";
+    public static final String MSG_VER_PIN_CMD_PIN_LEN_INVALID = "PIN Length must be numeric, and in the range 4 to 12.";
+    public static final String ERR_PINFNVR004 = "PINFNVR004";
+    public static final String MSG_VER_PIN_CMD_PIN_INVALID = "PIN must be numeric, and length of PIN must be in the range 4 to 12.";
+    public static final String ERR_PINFNVR005 = "PINFNVR005";
+    public static final String MSG_VER_PIN_CMD_PIN_OFFSET_INVALID = "PIN Offset length must be greater than or equal to PIN Length, and must be comprised of 4 to 12 digits.";
 
 }

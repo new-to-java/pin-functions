@@ -3,13 +3,14 @@ package com.bc.model.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 /**
  * This class defines the attributes for PIN Generation REST API request.
  */
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor
 @Schema(name = "Generate PIN Request", description = "PIN Generation request DTO Class.")
 public class GeneratePinRequest {
     @JsonProperty("Pan")
@@ -25,6 +26,10 @@ public class GeneratePinRequest {
     @Schema(example = "111111111111")
     String pinOffset;
 
+    /**
+     * Override default toString method to generate a string representation of class attributes for logging.
+     * @return String representation of class attributes.
+     */
     @Override
     public String toString(){
         return this.getClass().getSimpleName() +

@@ -7,6 +7,7 @@ import com.bc.application.domain.PvvFunctionsResponse;
 import com.bc.application.port.in.rest.client.PinFunctions;
 import com.bc.application.port.in.rest.command.GeneratePinCommand;
 import com.bc.application.port.in.rest.command.GeneratePvvCommand;
+import com.bc.application.port.in.rest.command.VerifyPinCommand;
 import com.bc.application.service.impl.PinFunctionsServiceImpl;
 import com.bc.application.service.impl.PvvFunctionsServiceImpl;
 import com.bc.model.dto.*;
@@ -44,24 +45,22 @@ public class PinFunctionsImpl implements PinFunctions {
         log.debug("Generate PIN Request received: {}.", generatePinRequest.toString());
         // Build GeneratePINCommand object from Generate PIN Request DTO
         GeneratePinCommand generatePinCommand = GeneratePinCommand.builder()
-                .pan(generatePinRequest.getPan())
-                .pinVerificationKey(generatePinRequest.getPinVerificationKey())
-                .pinLength(generatePinRequest.getPinLength())
-                .pinOffset(generatePinRequest.getPinOffset())
+                .setPan(generatePinRequest.getPan())
+                .setPinVerificationKey(generatePinRequest.getPinVerificationKey())
+                .setPinLength(generatePinRequest.getPinLength())
+                .setPinOffset(generatePinRequest.getPinOffset())
                 .build();
-        // Call service to generate PIN and map response to Dto
+        log.debug("Mapper generate PIN command: {}.", generatePinCommand.toString());
+        // Call service to generate PIN
         PinFunctionsResponse pinFunctionsResponse = pinFunctionsService
                 .generatePin(generatePinCommand);
         // Map domain response object to Generate PIN Response DTO
         GeneratePinResponse generatePinResponse = pinFunctionsResponseMapper
                 .mapPinFunctionResponseToGeneratePinResponseDto(pinFunctionsResponse);
         // Build REST API response
-        return Response
-                .status(Response.Status.CREATED)
-                .entity(generatePinResponse)
-                .type(MediaType.APPLICATION_JSON_TYPE)
-                .build();
-
+        return responseBuilder(
+                generatePinResponse
+        );
     }
 
     /**
@@ -73,7 +72,22 @@ public class PinFunctionsImpl implements PinFunctions {
      */
     @Override
     public Response verifyPin(VerifyPinRequest verifyPINRequest) {
-        return null;
+        log.debug("Verify PIN Request received: {}.", verifyPINRequest.toString());
+        VerifyPinCommand verifyPinCommand = VerifyPinCommand.builder()
+                .setPan(verifyPINRequest.getPan())
+                .setPinVerificationKey(verifyPINRequest.getPinVerificationKey())
+                .setPinLength(verifyPINRequest.getPinLength())
+                .setPin(verifyPINRequest.getPin())
+                .setPinOffset(verifyPINRequest.getPinOffset())
+                .build();
+        log.debug("Mapper verify PIN command: {}.", verifyPinCommand.toString());
+        // Call service to verify PIN and map response to Dto
+        PinFunctionsResponse pinFunctionsResponse = pinFunctionsService.verifyPin(verifyPinCommand);
+        // Map domain response object to Verify PIN Response DTO
+        VerifyPinResponse verifyPinResponse = pinFunctionsResponseMapper
+                .mapPinFunctionResponseToVerifyPinResponseDto(pinFunctionsResponse);
+        // Build REST API response
+        return responseBuilder(verifyPinResponse);
     }
 
     /**
@@ -98,10 +112,9 @@ public class PinFunctionsImpl implements PinFunctions {
         GeneratePvvResponse generatePvvResponse = pvvFunctionsResponseMapper
                 .mapPvvFunctionResponseToGeneratePvvResponseDto(pvvFunctionsResponse);
         // Build REST API response
-        return Response
-                .status(Response.Status.CREATED)
-                .entity(generatePvvResponse)
-                .build();
+        return responseBuilder(
+                generatePvvResponse
+        );
     }
 
     /**
@@ -136,4 +149,21 @@ public class PinFunctionsImpl implements PinFunctions {
     public Response decryptPin(DecryptPin decryptPin) {
         return null;
     }
+
+    /**
+     * Generic method for handling JSON response object creation from response DTO class.
+     *
+     * @param <T>    Generic class identifying the entity class
+     * @param entity DTO object to be converted to JSON
+     * @return JSON response generated from entity object
+     */
+    private <T> Response responseBuilder(T entity) {
+
+        return Response
+                .status(Response.Status.CREATED)
+                .entity(entity)
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .build();
+    }
+
 }

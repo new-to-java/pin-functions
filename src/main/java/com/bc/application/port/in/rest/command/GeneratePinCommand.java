@@ -1,11 +1,11 @@
 package com.bc.application.port.in.rest.command;
 
 import com.bc.exception.CommonException;
-import com.bc.utilities.Validator;
 import jakarta.ws.rs.core.Response;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import static com.bc.exception.ErrorConstants.*;
+import static com.bc.utilities.Validator.*;
 
 /**
  * Command object for Generate PIN request
@@ -65,7 +65,7 @@ public class GeneratePinCommand {
          * @param pan PAN
          * @return PinVerificationKey setter interface.
          */
-        PinVerificationKeySetter pan(String pan);
+        PinVerificationKeySetter setPan(String pan);
     }
 
     /**
@@ -77,7 +77,7 @@ public class GeneratePinCommand {
          * @param pinVerificationKey PIN Verification Key.
          * @return PinLength setter interface.
          */
-        PinLengthSetter pinVerificationKey(String pinVerificationKey);
+        PinLengthSetter setPinVerificationKey(String pinVerificationKey);
     }
 
     /**
@@ -89,7 +89,7 @@ public class GeneratePinCommand {
          * @param pinLength Length of the PIN.
          * @return PinOffset setter interface.
          */
-        PinOffsetSetter pinLength(String pinLength);
+        PinOffsetSetter setPinLength(String pinLength);
     }
 
     /**
@@ -101,7 +101,7 @@ public class GeneratePinCommand {
          * @param pinOffset PIN Offset to be added to PIN.
          * @return FinshBuild interface.
          */
-        FinishBuild pinOffset(String pinOffset);
+        FinishBuild setPinOffset(String pinOffset);
 
     }
 
@@ -133,9 +133,9 @@ public class GeneratePinCommand {
          * @return Builder object with pan attribute set.
          */
         @Override
-        public Builder pan(String pan) {
+        public Builder setPan(String pan) {
             log.debug(this.getClass().getSimpleName() + " Pan received: {}.", pan);
-            if (Validator.isPanValid(pan)) {
+            if (isPanValid(pan)) {
                 this.pan = pan;
             } else {
                 throw new CommonException(MSG_GEN_PIN_CMD_PAN_NOT_NUM,
@@ -151,9 +151,9 @@ public class GeneratePinCommand {
          * @return Builder object with pinVerificationKey attribute set.
          */
         @Override
-        public Builder pinVerificationKey(String pinVerificationKey) {
+        public Builder setPinVerificationKey(String pinVerificationKey) {
             log.debug(this.getClass().getSimpleName() + " PinVerificationKey received: {}.", pinVerificationKey);
-            if (Validator.isTdeaKeyValid(pinVerificationKey)) {
+            if (isTdeaKeyValid(pinVerificationKey)) {
                 this.pinVerificationKey = pinVerificationKey;
             } else {
                 throw new CommonException(MSG_GEN_PIN_CMD_PVK_INVALID,
@@ -169,9 +169,9 @@ public class GeneratePinCommand {
          * @return Builder object with pinLength attribute set.
          */
         @Override
-        public Builder pinLength(String pinLength){
+        public Builder setPinLength(String pinLength){
             log.debug(this.getClass().getSimpleName() + " PinLength received: {}.", pinLength);
-            if (Validator.isPinLengthValid(pinLength)) {
+            if (isPinLengthValid(pinLength)) {
                 this.pinLength = pinLength;
             } else {
                 throw new CommonException(MSG_GEN_PIN_CMD_PIN_LEN_INVALID,
@@ -187,9 +187,9 @@ public class GeneratePinCommand {
          * @return Builder object with pinOffset attribute set.
          */
         @Override
-        public Builder pinOffset(String pinOffset){
+        public Builder setPinOffset(String pinOffset){
             log.debug(this.getClass().getSimpleName() + " PinOffset received: {}.", pinOffset);
-            if (Validator.isPinOffsetValid(pinLength, pinOffset)) {
+            if (isPinOffsetValid(pinLength, pinOffset)) {
                 this.pinOffset = pinOffset;
             } else {
                 throw new CommonException(MSG_GEN_PIN_CMD_PIN_OFFSET_INVALID,

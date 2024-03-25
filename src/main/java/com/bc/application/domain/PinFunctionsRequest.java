@@ -15,6 +15,7 @@ public class PinFunctionsRequest {
     private String pinVerificationKey;
     private String pinLength;
     private String pinOffset;
+    private String pin;
 
     /**
      * Override default toString method to generate a string representation of class attributes for logging.
@@ -27,7 +28,8 @@ public class PinFunctionsRequest {
                 "pan: " + pan + ", " +
                 "pinVerificationKey: " + pinVerificationKey + ", " +
                 "pinLength: " + pinLength + ", " +
-                "pinOffset: " + pinOffset +
+                "pinOffset: " + pinOffset + ", " +
+                "pin: " + pin +
                 " }";
     }
 }

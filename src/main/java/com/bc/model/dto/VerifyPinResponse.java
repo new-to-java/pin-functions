@@ -1,5 +1,6 @@
 package com.bc.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,16 +14,17 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Getter
 @Setter
 @NoArgsConstructor
-public class GeneratePinResponse {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class VerifyPinResponse {
     @JsonProperty("Pin")
     @Schema(example = "123456789012")
     String pin;
-    @JsonProperty("PinOffset")
+    @JsonProperty("GeneratedPin")
     @Schema(example = "111111111111")
-    String pinOffset;
-    @JsonProperty("PinLength")
-    @Schema(example = "12")
-    String pinLength;
+    String generatedPin;
+    @JsonProperty("VerificationSuccessful")
+    @Schema(example = "true")
+    String pinVerified;
 
     /**
      * Override default toString method to generate a string representation of class attributes for logging.
@@ -33,8 +35,8 @@ public class GeneratePinResponse {
         return this.getClass().getSimpleName() +
                 " { " +
                 "pin: " + pin + ", " +
-                "pinLength: " + pinLength + ", " +
-                "pinOffset: " + pinOffset +
+                "generatedPin: " + generatedPin + ", " +
+                "pinVerified: " + pinVerified +
                 " }";
     }
 

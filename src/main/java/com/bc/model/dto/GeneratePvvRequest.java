@@ -3,13 +3,14 @@ package com.bc.model.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 /**
  * This class defines the attributes for PIN Generation REST API request.
  */
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor
 public class GeneratePvvRequest {
 
     @JsonProperty("Pan")

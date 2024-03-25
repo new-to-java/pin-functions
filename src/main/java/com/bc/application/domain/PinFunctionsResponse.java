@@ -17,6 +17,8 @@ public class PinFunctionsResponse {
     private String pinOffset;
     private String pinLength;
     private String intermediatePin;
+    private String calculatedPin;
+    private boolean pinVerified;
 
     /**
      * Override default toString method to generate a string representation of class attributes for logging.
@@ -29,7 +31,9 @@ public class PinFunctionsResponse {
                 "pin: " + pin + ", " +
                 "pinLength: " + pinLength + ", " +
                 "pinOffset: " + pinOffset + ", " +
-                "intermediatePin: " + intermediatePin +
+                "intermediatePin: " + intermediatePin + ", " +
+                "calculatedPin: " + calculatedPin + ", " +
+                "pinVerified: " + pinVerified +
                 " }";
     }
 

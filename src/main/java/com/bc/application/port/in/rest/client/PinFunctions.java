@@ -33,7 +33,7 @@ public interface PinFunctions {
     @Path("/Generate/IBM3624Pin")
     @POST
     @Operation(
-            operationId = "IBM3624Pin",
+            operationId = "GenrateIBM3624Pin",
             summary = "Generate an IBM 3624 PIN based on offset.",
             description = "This REST API allows the user to request generation of an IBM 3624 PIN " +
                     "for a given Pan, PinVerificationKey, PinLength and PinOffset supplied. " +
@@ -69,8 +69,30 @@ public interface PinFunctions {
      * @param verifyPINRequest PIN verification request.
      * @return PIN verification response.
      */
-    @Path("/Verify/Pin")
+    @Path("/Verify/IBM3624Pin")
     @POST
+    @Operation(
+            operationId = "VerifyIBM3624Pin",
+            summary = "Verify an IBM 3624 PIN based on offset.",
+            description = "This REST API allows the user to request verification of an IBM 3624 PIN supplied along with " +
+                    "Pan, PinVerificationKey, PinLength and PinOffset supplied. " +
+                    "The PIN length supplied must be a number in the range 4 to 12."
+    )
+    @APIResponse(
+            responseCode = "200",
+            description = "[OK] IBM 3624 PIN based on an offset has been successfully verified.",
+            content = @Content(schema = @Schema(implementation = VerifyPinResponse.class))
+    )
+    @APIResponse(
+            responseCode = "400",
+            description = "[Bad Request] Request payload verification failed.",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+    )
+    @APIResponse(
+            responseCode = "500",
+            description = "[Internal Server Error] Server encountered an error while processing the request, if problem persists contact programmer.",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+    )
     Response verifyPin(VerifyPinRequest verifyPINRequest);
 
     /**

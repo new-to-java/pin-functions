@@ -9,13 +9,20 @@ import com.bc.application.port.in.rest.command.VerifyPinCommand;
 import com.bc.application.port.in.rest.mapper.PinFunctionsMapper;
 import com.bc.application.service.PinFunctionsService;
 import com.bc.application.service.actions.GenerateIBM3624Pin;
+import com.bc.application.service.actions.VerifyIBM3624Pin;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import java.util.Objects;
 
 @ApplicationScoped
 @Slf4j
 public class PinFunctionsServiceImpl implements PinFunctionsService {
+
+    @Inject
+    @ConfigProperty(name = "APP.DECIMALISATION_TABLE")
+    private String _DECIMALISATION_TABLE;
 
     @Inject
     PinFunctionsMapper pinFunctionsMapper;
@@ -28,23 +35,35 @@ public class PinFunctionsServiceImpl implements PinFunctionsService {
      */
     @Override
     public PinFunctionsResponse generatePin(GeneratePinCommand generatePinCommand) {
-
-        String DECIMALISATION_TABLE = "0123456789012345";
-        PinFunctionsRequest generatePinRequest = pinFunctionsMapper.mapGeneratePinCommandToDomainRequest(generatePinCommand);
+        // Map generate PIN command to PIN functions request domain object
+        PinFunctionsRequest generatePinRequest = pinFunctionsMapper
+                .mapGeneratePinCommandToDomainRequest(generatePinCommand);
+        log.debug("Mapped generate PIN Request object : {}.", generatePinRequest);
         // Build IBM 3624 PIN generation object
-        GenerateIBM3624Pin ibm3624Pin = GenerateIBM3624Pin.builder()
+        GenerateIBM3624Pin ibm3624Pin = generateIBM3624Pin(generatePinRequest);
+        log.debug("IBM 3624 PIN generation object: {}.", ibm3624Pin);
+        // Map IBM 3624 PIN generation action to generate PIN functions response domain object
+        PinFunctionsResponse generatePinResponse = pinFunctionsMapper
+                .mapGenerateIBM3624PinToDomainResponse(ibm3624Pin);
+        log.debug("Mapped generate PIN response object: {}.", generatePinResponse);
+        return generatePinResponse;
+
+    }
+
+    /**
+     * Method for generating an IBM 3624 PIN based on offset.
+     * @param generatePinRequest Request object containing attributes for PIN generation.
+     * @return An IBM 3624 Pin generation object containing the generated PIN.
+     */
+    private GenerateIBM3624Pin generateIBM3624Pin(PinFunctionsRequest generatePinRequest) {
+        // Generate an IBM 3624 PIN based on offset
+        return GenerateIBM3624Pin.builder()
                 .getPinValidationDataFromPan(generatePinRequest.getPan())
                 .encryptPinValidationData(generatePinRequest.getPinVerificationKey())
-                .decimaliseEncryptedValidationData(DECIMALISATION_TABLE)
+                .decimaliseEncryptedValidationData(getDecimalisationTable())
                 .truncateToPinLength(generatePinRequest.getPinLength())
                 .addPinOffset(generatePinRequest.getPinOffset())
                 .build();
-        log.debug("Mapped IBM 3624 PIN Generation object: {}.", ibm3624Pin);
-        // Call core domain service to generate IBM 3624 PIN
-        PinFunctionsResponse generatePinResponse = pinFunctionsMapper.mapGenerateIBM3624PinToDomainResponse(ibm3624Pin);
-        log.debug("Mapped PIN Functions response object: {}.", generatePinResponse);
-        return generatePinResponse;
-
     }
 
     /**
@@ -55,7 +74,63 @@ public class PinFunctionsServiceImpl implements PinFunctionsService {
      */
     @Override
     public PinFunctionsResponse verifyPin(VerifyPinCommand verifyPinCommand) {
-        return null;
+        // Map verify PIN command to PIN functions request domain object
+        PinFunctionsRequest pinVerificationRequest = pinFunctionsMapper
+                .mapVerifyPinCommandToDomainRequest(verifyPinCommand);
+        log.debug("Mapped generate PIN Verification object : {}.", pinVerificationRequest);
+        // Build IBM 3624 PIN verification object
+        VerifyIBM3624Pin verifyIBM3624Pin = generateAndVerifyIBM3624Pin(pinVerificationRequest);
+        log.debug("IBM 3624 PIN verification object: {}.", verifyIBM3624Pin);
+        // Map IBM 3624 PIN verification action to generate PIN functions response domain object
+        PinFunctionsResponse pinVerificationResponse = pinFunctionsMapper
+                .mapVerifyIBM3624PinToDomainResponse(verifyIBM3624Pin);
+        log.debug("Mapped verify PIN response object: {}.", pinVerificationResponse);
+        return pinVerificationResponse;
+
+    }
+
+    /**
+     * Method for generating and verifying an IBM 3624 PIN based on offset against an input PIN.
+     * @param pinVerificationRequest Request object containing attributes for PIN verification.
+     * @return IBM 3624 Pin verification object containing the PIN verification response.
+     */
+    private VerifyIBM3624Pin generateAndVerifyIBM3624Pin(PinFunctionsRequest pinVerificationRequest) {
+
+        // Generate an IBM 3624 PIN based on offset
+        GenerateIBM3624Pin generateIBM3624Pin = GenerateIBM3624Pin.builder()
+                .getPinValidationDataFromPan(pinVerificationRequest.getPan())
+                .encryptPinValidationData(pinVerificationRequest.getPinVerificationKey())
+                .decimaliseEncryptedValidationData(getDecimalisationTable())
+                .truncateToPinLength(pinVerificationRequest.getPinLength())
+                .addPinOffset(pinVerificationRequest.getPinOffset())
+                .build();
+        log.debug("IBM 3624 PIN generation object: {}.", generateIBM3624Pin);
+        // Verify an IBM 3624 PIN based on offset supplied against generated PIN and return.
+        return VerifyIBM3624Pin.builder()
+                .getGeneratedPin(generateIBM3624Pin.getPin())
+                .setPin(pinVerificationRequest.getPin())
+                .verifyPin()
+                .build();
+    }
+
+    /**
+     * Method for checking if an external decimalisation table is supplied, if not use the default decimalisation table.
+     * @return Decimalisation table to be used in PIN generation.
+     */
+    private String getDecimalisationTable(){
+        // Default decimalisation table
+        final String DEFAULT_DECIMALISATION_TABLE = "0123456789012345";
+        // If externally supplied decimalisation table is null, use default
+        boolean externalTableSupplied = ((_DECIMALISATION_TABLE != null) && (!_DECIMALISATION_TABLE.isEmpty()));
+        // Set the table to be used
+        String decimalisationTable = (externalTableSupplied) ?
+                _DECIMALISATION_TABLE :
+                DEFAULT_DECIMALISATION_TABLE;
+        // Log the table used
+        log.debug(this.getClass().getSimpleName() + ": Decimalisation table: \"{}\". And is supplied externally: {}.",
+                decimalisationTable,
+                externalTableSupplied);
+        return decimalisationTable;
     }
 
     /**
