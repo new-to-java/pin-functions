@@ -9,12 +9,11 @@ import lombok.Setter;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 /**
- * This class defines the attributes for PIN Generation REST API request.
+ * This class defines the attributes for PIN Verification REST API response.
  */
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class VerifyPinResponse {
     @JsonProperty("Pin")
     @Schema(example = "123456789012")
