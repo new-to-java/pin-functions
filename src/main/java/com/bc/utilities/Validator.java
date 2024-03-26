@@ -52,16 +52,16 @@ public class Validator {
 
     /**
      * Verify input keyIndex and ensure it contains decimal digits only and is in the range 1 to 9.
-     * @param keyIndex Key Index to be verified.
+     * @param pvvKeyIndex Key Index to be verified.
      * @return True when keyIndex is valid, else returns False.
      */
-    public static boolean isKeyIndexValid(String keyIndex){
+    public static boolean isPvvKeyIndexValid(String pvvKeyIndex){
         final String KEY_INDEX_PATTERN = "^[1-9]$";
         int parsedKeyIndex = 0;
         boolean isNotNullAndMatchesPattern = false;
-        if ((Objects.nonNull(keyIndex)) && (Pattern.matches(KEY_INDEX_PATTERN, keyIndex))) {
+        if ((Objects.nonNull(pvvKeyIndex)) && (Pattern.matches(KEY_INDEX_PATTERN, pvvKeyIndex))) {
             isNotNullAndMatchesPattern = true;
-            parsedKeyIndex = Integer.parseInt(keyIndex);
+            parsedKeyIndex = Integer.parseInt(pvvKeyIndex);
         }
         return isNotNullAndMatchesPattern &&
                 ((parsedKeyIndex >= 1 &&
@@ -87,9 +87,9 @@ public class Validator {
     }
 
     /**
-     * Verify input pin and ensure it contains decimal digits only and is 4 to 12 digits long.
+     * Verify input PIN and ensure it contains decimal digits only and is 4 to 12 digits long.
      * @param pin PIN to be verified.
-     * @return True when pin is valid, else returns False.
+     * @return True when PVV is valid, else returns False.
      */
     public static boolean isPinValid(String pin){
         final String PIN_PATTERN = "^\\d{1,12}$";
@@ -98,6 +98,18 @@ public class Validator {
                 // must be comprised of 4 to 12 digits
                 ((pin.length() >= 4) &&
                         (pin.length() <= 12));
+    }
+
+    /**
+     * Verify input PVV and ensure it contains decimal digits only and is exactly 4 digits long.
+     * @param pvv PVV to be verified.
+     * @return True when PVV is valid, else returns False.
+     */
+    public static boolean isPvvValid(String pvv){
+        final String PVV_PATTERN = "^\\d{4}$";
+        // Must be all numeric and exactly 4 digits long
+        return Objects.nonNull(pvv) &&
+                Pattern.matches(PVV_PATTERN, pvv);
     }
 
 }

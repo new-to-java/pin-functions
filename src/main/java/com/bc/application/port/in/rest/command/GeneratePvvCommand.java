@@ -1,12 +1,15 @@
 package com.bc.application.port.in.rest.command;
 
 import com.bc.exception.CommonException;
-import com.bc.utilities.Validator;
 import jakarta.ws.rs.core.Response;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import static com.bc.exception.ErrorConstants.*;
+import static com.bc.utilities.Validator.*;
 
+/**
+ * Command object for Generate PVV request
+ */
 @Getter
 @Slf4j
 public class GeneratePvvCommand {
@@ -130,7 +133,7 @@ public class GeneratePvvCommand {
         @Override
         public PinSetter setPan(String pan) {
             log.debug(this.getClass().getSimpleName() + " Pan received: {}.", pan);
-            if (Validator.isPanValid(pan)){
+            if (isPanValid(pan)){
                 this.pan = pan;
             } else {
                 throw new CommonException(MSG_GEN_PVV_CMD_PAN_NOT_NUM,
@@ -149,7 +152,7 @@ public class GeneratePvvCommand {
         @Override
         public PvvKeyIndexSetter setPin(String pin) {
             log.debug(this.getClass().getSimpleName() + " Pin received: {}.", pin);
-            if (Validator.isPinValid(pin)){
+            if (isPinValid(pin)){
                 this.pin = pin;
             } else {
                 throw new CommonException(MSG_GEN_PVV_CMD_PIN_INVALID,
@@ -168,7 +171,7 @@ public class GeneratePvvCommand {
         @Override
         public PvvKeySetter setPvvKeyIndex(String pvvKeyIndex) {
             log.debug(this.getClass().getSimpleName() + " PvvKeyIndex received: {}.", pvvKeyIndex);
-            if (Validator.isKeyIndexValid(pvvKeyIndex)){
+            if (isPvvKeyIndexValid(pvvKeyIndex)){
                 this.pvvKeyIndex = pvvKeyIndex;
             } else{
                 throw new CommonException(MSG_GEN_PVV_CMD_PIN_KEY_INDEX_INVALID,
@@ -187,7 +190,7 @@ public class GeneratePvvCommand {
         @Override
         public FinishBuild setPvvKey(String pvvKey) {
             log.debug(this.getClass().getSimpleName() + " PvvKey received: {}.", pvvKey);
-            if (Validator.isTdeaKeyValid(pvvKey)){
+            if (isTdeaKeyValid(pvvKey)){
                 this.pvvKey = pvvKey;
             } else {
                 throw new CommonException(MSG_GEN_PVV_CMD_PVK_INVALID,

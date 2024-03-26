@@ -12,6 +12,8 @@ import lombok.Setter;
 public class PvvFunctionsResponse {
 
     String pvv;
+    String generatedPvv;
+    boolean isPvvVerified;
     String pin;
 
     /**
@@ -23,7 +25,9 @@ public class PvvFunctionsResponse {
         return this.getClass().getSimpleName() +
                 " { " +
                 "pvv: " + pvv + ", " +
-                "pvv: " + pin + ", " +
+                "generatedPvv: " + generatedPvv + ", " +
+                "isPvvVerified: " + isPvvVerified + ", " +
+                "pin: " + pin +
                 " }";
     }
 

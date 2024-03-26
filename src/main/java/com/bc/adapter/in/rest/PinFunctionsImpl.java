@@ -8,6 +8,7 @@ import com.bc.application.port.in.rest.client.PinFunctions;
 import com.bc.application.port.in.rest.command.GeneratePinCommand;
 import com.bc.application.port.in.rest.command.GeneratePvvCommand;
 import com.bc.application.port.in.rest.command.VerifyPinCommand;
+import com.bc.application.port.in.rest.command.VerifyPvvCommand;
 import com.bc.application.service.impl.PinFunctionsServiceImpl;
 import com.bc.application.service.impl.PvvFunctionsServiceImpl;
 import com.bc.model.dto.*;
@@ -50,16 +51,18 @@ public class PinFunctionsImpl implements PinFunctions {
                 .setPinLength(generatePinRequest.getPinLength())
                 .setPinOffset(generatePinRequest.getPinOffset())
                 .build();
-        log.debug("Mapper generate PIN command: {}.", generatePinCommand.toString());
+        log.debug("Mapped generate PIN command: {}.", generatePinCommand.toString());
         // Call service to generate PIN
         PinFunctionsResponse pinFunctionsResponse = pinFunctionsService
                 .generatePin(generatePinCommand);
         // Map domain response object to Generate PIN Response DTO
         GeneratePinResponse generatePinResponse = pinFunctionsResponseMapper
                 .mapPinFunctionResponseToGeneratePinResponseDto(pinFunctionsResponse);
+        log.debug("Mapped generate PIN response DTO: {}.", generatePinResponse.toString());
         // Build REST API response
         return responseBuilder(
-                generatePinResponse
+                generatePinResponse,
+                Response.Status.CREATED
         );
     }
 
@@ -80,14 +83,23 @@ public class PinFunctionsImpl implements PinFunctions {
                 .setPin(verifyPINRequest.getPin())
                 .setPinOffset(verifyPINRequest.getPinOffset())
                 .build();
-        log.debug("Mapper verify PIN command: {}.", verifyPinCommand.toString());
-        // Call service to verify PIN and map response to Dto
-        PinFunctionsResponse pinFunctionsResponse = pinFunctionsService.verifyPin(verifyPinCommand);
+        log.debug("Mapped verify PIN command: {}.", verifyPinCommand.toString());
+        // Call service to verify PIN
+        PinFunctionsResponse pinFunctionsResponse = pinFunctionsService
+                .verifyPin(verifyPinCommand);
         // Map domain response object to Verify PIN Response DTO
         VerifyPinResponse verifyPinResponse = pinFunctionsResponseMapper
                 .mapPinFunctionResponseToVerifyPinResponseDto(pinFunctionsResponse);
+        log.debug("Mapped verify PIN response DTO: {}.", verifyPinResponse.toString());
+        // Alter HTTP status code based on PIN verification result
+        Response.Status httpStatusCode = (pinFunctionsResponse.isPinVerified()) ?
+                Response.Status.OK :
+                Response.Status.NOT_ACCEPTABLE;
         // Build REST API response
-        return responseBuilder(verifyPinResponse);
+        return responseBuilder(
+                verifyPinResponse,
+                httpStatusCode
+        );
     }
 
     /**
@@ -106,14 +118,18 @@ public class PinFunctionsImpl implements PinFunctions {
                 .setPvvKeyIndex(generatePVVRequest.getPvvKeyIndex())
                 .setPvvKey(generatePVVRequest.getPvvKey())
                 .build();
-        // Call Pvv Functions Service and generate PVV
-        PvvFunctionsResponse pvvFunctionsResponse = pvvFunctionsService.generatePvv(generatePvvCommand);
+        log.debug("Mapped generate PVV command: {}.", generatePvvCommand.toString());
+        // Call service to generate PVV
+        PvvFunctionsResponse pvvFunctionsResponse = pvvFunctionsService
+                .generatePvv(generatePvvCommand);
         // Map domain response object to Generate PVV Response DTO
         GeneratePvvResponse generatePvvResponse = pvvFunctionsResponseMapper
                 .mapPvvFunctionResponseToGeneratePvvResponseDto(pvvFunctionsResponse);
+        log.debug("Mapped generate PVV response DTO: {}.", generatePvvResponse.toString());
         // Build REST API response
         return responseBuilder(
-                generatePvvResponse
+                generatePvvResponse,
+                Response.Status.CREATED
         );
     }
 
@@ -125,7 +141,31 @@ public class PinFunctionsImpl implements PinFunctions {
      */
     @Override
     public Response verifyPvv(VerifyPvvRequest verifyPVVRequest) {
-        return null;
+        log.debug("Verify PVV Request received: {}.", verifyPVVRequest.toString());
+        VerifyPvvCommand verifyPvvCommand = VerifyPvvCommand.builder()
+                .setPan(verifyPVVRequest.getPan())
+                .setPin(verifyPVVRequest.getPin())
+                .setPvv(verifyPVVRequest.getPvv())
+                .setPvvKeyIndex(verifyPVVRequest.getPvvKeyIndex())
+                .setPvvKey(verifyPVVRequest.getPvvKey())
+                .build();
+        log.debug("Mapped verify PVV command: {}.", verifyPvvCommand.toString());
+        // Call service to verify PVV
+        PvvFunctionsResponse pvvFunctionsResponse = pvvFunctionsService
+                .verifyPvv(verifyPvvCommand);
+        // Map domain response object to Generate PVV Response DTO
+        VerifyPvvResponse verifyPvvResponse = pvvFunctionsResponseMapper
+                .mapPvvFunctionResponseToVerifyPvvResponseDto(pvvFunctionsResponse);
+        log.debug("Mapped verify PVV response DTO: {}.", verifyPvvResponse.toString());
+        // Alter HTTP status code based on PVV verification result
+        Response.Status httpStatusCode = (pvvFunctionsResponse.isPvvVerified()) ?
+                Response.Status.OK :
+                Response.Status.NOT_ACCEPTABLE;
+        // Build REST API response
+        return responseBuilder(
+                verifyPvvResponse,
+                httpStatusCode
+        );
     }
 
     /**
@@ -157,10 +197,10 @@ public class PinFunctionsImpl implements PinFunctions {
      * @param entity DTO object to be converted to JSON
      * @return JSON response generated from entity object
      */
-    private <T> Response responseBuilder(T entity) {
+    private <T> Response responseBuilder(T entity, Response.Status httpStatusCode) {
 
         return Response
-                .status(Response.Status.CREATED)
+                .status(httpStatusCode)
                 .entity(entity)
                 .type(MediaType.APPLICATION_JSON_TYPE)
                 .build();

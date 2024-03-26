@@ -123,12 +123,12 @@ public class GenerateVisaPvv {
             log.debug(this.getClass().getSimpleName() + " Pan received: {}.", pan);
             log.debug(this.getClass().getSimpleName() + " PvvKeyIndex received: {}.", pvvKeyIndex);
             log.debug(this.getClass().getSimpleName() + " Pin received: {}.", pin);
-            // 16 digit PAN assumed
+            // Start and end index for PAN data
             final int PAN_EXTRACT_START_INDEX = 4; //Start from 5th digit
             final int PAN_EXTRACT_END_INDEX = 15; // Exclude check digit
-            // PIN offset Values
-            final int PIN_EXTRACT_START_INDEX = 0; //Start from 5th digit
-            final int PIN_EXTRACT_END_INDEX = 4; // Exclude check digit
+            // Start and end index for PIN data
+            final int PIN_EXTRACT_START_INDEX = 0; //Start from 1st digit
+            final int PIN_EXTRACT_END_INDEX = 4; // Always extract till 4th digit only
             // Set PIN attribute and build TSP
             this.pin = pin;
             this.tsp = new StringBuilder();
@@ -136,7 +136,9 @@ public class GenerateVisaPvv {
             this.tsp.append(pan, PAN_EXTRACT_START_INDEX, PAN_EXTRACT_END_INDEX);
             this.tsp.append(pvvKeyIndex);
             // PIN is being trimmed to 4 bytes, since regardless of the PIN length, the PVV seems to be always 4 digits
-            // so left most 4 digits are always extracted and included in TSP derivation. This needs to be confirmed.
+            // so left most 4 digits are always extracted and included in TSP derivation.
+            // Reference: https://docs.oracle.com/cd/E19321-01/E39851/5_FS.html
+            // Section to refer: PIN Calculation Methods
             this.tsp.append(pin, PIN_EXTRACT_START_INDEX, PIN_EXTRACT_END_INDEX);
             return this;
         }

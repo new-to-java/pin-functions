@@ -13,6 +13,7 @@ public class PvvFunctionsRequest {
 
     private String pan;
     private String pin;
+    private String pvv;
     private String pvvKeyIndex;
     private String pvvKey;
 
@@ -26,6 +27,7 @@ public class PvvFunctionsRequest {
                 " { " +
                 "pan: " + pan + ", " +
                 "pin: " + pin + ", " +
+                "pvv: " + pvv + ", " +
                 "pinKeyIndex: " + pvvKeyIndex + ", " +
                 "pvvKey: " + pvvKey +
                 " }";

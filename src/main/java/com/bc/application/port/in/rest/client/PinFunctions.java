@@ -89,6 +89,11 @@ public interface PinFunctions {
             content = @Content(schema = @Schema(implementation = ErrorResponse.class))
     )
     @APIResponse(
+            description = "[Not Acceptable] IBM 3624 PIN based on an offset has failed verification.",
+            responseCode = "406",
+            content = @Content(schema = @Schema(implementation = VerifyPinResponse.class))
+    )
+    @APIResponse(
             responseCode = "500",
             description = "[Internal Server Error] Server encountered an error while processing the request, if problem persists contact programmer.",
             content = @Content(schema = @Schema(implementation = ErrorResponse.class))
@@ -100,10 +105,10 @@ public interface PinFunctions {
      * @param generatePVVRequest PVV generation request.
      * @return PVV generation response.
      */
-    @Path("/Generate/Pvv")
+    @Path("/Generate/VisaPvv")
     @POST
     @Operation(
-            operationId = "generatePvv",
+            operationId = "GenerateVisaPvv",
             summary = "Generate a Visa PIN Verification Value (PVV).",
             description = "This REST API allows the user to request generation of a Visa PIN " +
                     "Verification Value (PVV) for a given Pan, Pin, PvvKeyIndex and PvvKey supplied. " +
@@ -137,9 +142,43 @@ public interface PinFunctions {
      * @param verifyPVVRequest PVV verification request.
      * @return PVV verification response.
      */
-    @Path("/Verify/Pvv")
+    @Path("/Verify/VisaPvv")
     @POST
-    Response verifyPvv(VerifyPvvRequest verifyPVVRequest);
+    @Operation(
+            operationId = "VerifyVisaPvv",
+            summary = "Verify a Visa PIN Verification Value (PVV).",
+            description = "This REST API allows the user to request verification of a Visa PIN Verification value" +
+                    " supplied along with Pan, Pin, Pvv, PvvKeyIndex and PvvKey supplied. " +
+                    "The PIN length supplied must be a number in the range 4 to 12 and PVV supplied must be a 4 digit number."
+    )
+
+    @APIResponse(
+            description = "[OK] Visa PIN Verification Value (PVV) has been successfully verified.",
+            responseCode = "200",
+            content = @Content(schema = @Schema(implementation = VerifyPvvResponse.class))
+    )
+    @APIResponse(
+            description = "[Bad Request] Request payload verification failed.",
+            responseCode = "400",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+    )
+    @APIResponse(
+            description = "[Not Acceptable] Visa PIN Verification Value (PVV) has failed verification.",
+            responseCode = "406",
+            content = @Content(schema = @Schema(implementation = VerifyPvvResponse.class))
+    )
+    @APIResponse(
+            description = "[Internal Server Error] Server encountered an error while processing the request, if problem persists contact programmer.",
+            responseCode = "500",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+    )
+    Response verifyPvv(@RequestBody(
+            description = "Visa PIN Verification Value verification request.",
+            required = true,
+            content = @Content(schema = @Schema(implementation = VerifyPvvRequest.class))
+    )
+                       VerifyPvvRequest verifyPVVRequest
+    );
 
     /**
      * Rest API endpoint for encrypting a cleartext PIN and generating a PIN block.

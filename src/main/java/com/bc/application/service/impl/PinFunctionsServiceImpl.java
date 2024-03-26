@@ -14,7 +14,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import java.util.Objects;
 
 @ApplicationScoped
 @Slf4j
@@ -38,32 +37,15 @@ public class PinFunctionsServiceImpl implements PinFunctionsService {
         // Map generate PIN command to PIN functions request domain object
         PinFunctionsRequest generatePinRequest = pinFunctionsMapper
                 .mapGeneratePinCommandToDomainRequest(generatePinCommand);
-        log.debug("Mapped generate PIN Request object : {}.", generatePinRequest);
-        // Build IBM 3624 PIN generation object
+        log.debug("Mapped PIN Generation object : {}.", generatePinRequest);
+        // Generate IBM 3624 PIN
         GenerateIBM3624Pin ibm3624Pin = generateIBM3624Pin(generatePinRequest);
-        log.debug("IBM 3624 PIN generation object: {}.", ibm3624Pin);
         // Map IBM 3624 PIN generation action to generate PIN functions response domain object
         PinFunctionsResponse generatePinResponse = pinFunctionsMapper
                 .mapGenerateIBM3624PinToDomainResponse(ibm3624Pin);
-        log.debug("Mapped generate PIN response object: {}.", generatePinResponse);
+        log.debug("Mapped PIN Generation response object: {}.", generatePinResponse);
         return generatePinResponse;
 
-    }
-
-    /**
-     * Method for generating an IBM 3624 PIN based on offset.
-     * @param generatePinRequest Request object containing attributes for PIN generation.
-     * @return An IBM 3624 Pin generation object containing the generated PIN.
-     */
-    private GenerateIBM3624Pin generateIBM3624Pin(PinFunctionsRequest generatePinRequest) {
-        // Generate an IBM 3624 PIN based on offset
-        return GenerateIBM3624Pin.builder()
-                .getPinValidationDataFromPan(generatePinRequest.getPan())
-                .encryptPinValidationData(generatePinRequest.getPinVerificationKey())
-                .decimaliseEncryptedValidationData(getDecimalisationTable())
-                .truncateToPinLength(generatePinRequest.getPinLength())
-                .addPinOffset(generatePinRequest.getPinOffset())
-                .build();
     }
 
     /**
@@ -77,44 +59,64 @@ public class PinFunctionsServiceImpl implements PinFunctionsService {
         // Map verify PIN command to PIN functions request domain object
         PinFunctionsRequest pinVerificationRequest = pinFunctionsMapper
                 .mapVerifyPinCommandToDomainRequest(verifyPinCommand);
-        log.debug("Mapped generate PIN Verification object : {}.", pinVerificationRequest);
-        // Build IBM 3624 PIN verification object
-        VerifyIBM3624Pin verifyIBM3624Pin = generateAndVerifyIBM3624Pin(pinVerificationRequest);
-        log.debug("IBM 3624 PIN verification object: {}.", verifyIBM3624Pin);
+        log.debug("Mapped PIN Verification object : {}.", pinVerificationRequest);
+        // Verify IBM 3624 PIN
+        VerifyIBM3624Pin verifyIBM3624Pin = verifyIBM3624Pin(pinVerificationRequest);
         // Map IBM 3624 PIN verification action to generate PIN functions response domain object
         PinFunctionsResponse pinVerificationResponse = pinFunctionsMapper
                 .mapVerifyIBM3624PinToDomainResponse(verifyIBM3624Pin);
-        log.debug("Mapped verify PIN response object: {}.", pinVerificationResponse);
+        log.debug("Mapped PIN Verification response object: {}.", pinVerificationResponse);
         return pinVerificationResponse;
 
     }
 
     /**
+     * Method for generating an IBM 3624 PIN based on offset.
+     * @param generatePinRequest Request object containing attributes for PIN generation.
+     * @return An IBM 3624 Pin generation object containing the generated PIN.
+     */
+    private GenerateIBM3624Pin generateIBM3624Pin(PinFunctionsRequest generatePinRequest) {
+        // Generate an IBM 3624 PIN based on offset
+        GenerateIBM3624Pin generateIBM3624Pin = GenerateIBM3624Pin.builder()
+                .getPinValidationDataFromPan(generatePinRequest.getPan())
+                .encryptPinValidationData(generatePinRequest.getPinVerificationKey())
+                .decimaliseEncryptedValidationData(getDecimalisationTable())
+                .truncateToPinLength(generatePinRequest.getPinLength())
+                .addPinOffset(generatePinRequest.getPinOffset())
+                .build();
+        // Log
+        log.debug("IBM 3624 PIN generation object: {}.", generateIBM3624Pin);
+        // Return
+        return generateIBM3624Pin;
+    }
+
+    /**
      * Method for generating and verifying an IBM 3624 PIN based on offset against an input PIN.
+     * Note: This method invokes the generatePin method first to generate the PIN and then compares the generated PIN
+     * against the input pin for a match.
+     *
      * @param pinVerificationRequest Request object containing attributes for PIN verification.
      * @return IBM 3624 Pin verification object containing the PIN verification response.
      */
-    private VerifyIBM3624Pin generateAndVerifyIBM3624Pin(PinFunctionsRequest pinVerificationRequest) {
+    private VerifyIBM3624Pin verifyIBM3624Pin(PinFunctionsRequest pinVerificationRequest) {
 
         // Generate an IBM 3624 PIN based on offset
-        GenerateIBM3624Pin generateIBM3624Pin = GenerateIBM3624Pin.builder()
-                .getPinValidationDataFromPan(pinVerificationRequest.getPan())
-                .encryptPinValidationData(pinVerificationRequest.getPinVerificationKey())
-                .decimaliseEncryptedValidationData(getDecimalisationTable())
-                .truncateToPinLength(pinVerificationRequest.getPinLength())
-                .addPinOffset(pinVerificationRequest.getPinOffset())
-                .build();
-        log.debug("IBM 3624 PIN generation object: {}.", generateIBM3624Pin);
+        GenerateIBM3624Pin generateIBM3624Pin = generateIBM3624Pin(pinVerificationRequest);
         // Verify an IBM 3624 PIN based on offset supplied against generated PIN and return.
-        return VerifyIBM3624Pin.builder()
+        VerifyIBM3624Pin verifyIBM3624Pin = VerifyIBM3624Pin.builder()
                 .getGeneratedPin(generateIBM3624Pin.getPin())
                 .setPin(pinVerificationRequest.getPin())
                 .verifyPin()
                 .build();
+        // Log
+        log.debug("IBM 3624 PIN verification object: {}.", verifyIBM3624Pin);
+        // Return
+        return verifyIBM3624Pin;
     }
 
     /**
      * Method for checking if an external decimalisation table is supplied, if not use the default decimalisation table.
+     *
      * @return Decimalisation table to be used in PIN generation.
      */
     private String getDecimalisationTable(){
@@ -127,7 +129,8 @@ public class PinFunctionsServiceImpl implements PinFunctionsService {
                 _DECIMALISATION_TABLE :
                 DEFAULT_DECIMALISATION_TABLE;
         // Log the table used
-        log.debug(this.getClass().getSimpleName() + ": Decimalisation table: \"{}\". And is supplied externally: {}.",
+        log.debug(this.getClass().getSimpleName() + ": Decimalisation table used: \"{}\"." +
+                        " Table is supplied externally: {}.",
                 decimalisationTable,
                 externalTableSupplied);
         return decimalisationTable;
