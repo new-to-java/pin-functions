@@ -19,7 +19,7 @@ public class VerifyPvvRequest {
     @Schema(example = "1234")
     private String pin;
     @JsonProperty("Pvv")
-    @Schema(example = "4567")
+    @Schema(example = "9185")
     private String pvv;
     @JsonProperty("PvvKeyIndex")
     @Schema(example = "1")
